@@ -1,6 +1,6 @@
-#include "teleporteos.hpp"
+#include <teleporteos.hpp>
 
-using namespace alienworlds;
+using namespace tstarter;
 
 teleporteos::teleporteos(name s, name code, datastream<const char *> ds) : contract(s, code, ds),
                                                                            _deposits(get_self(), get_self().value),
@@ -8,10 +8,10 @@ teleporteos::teleporteos(name s, name code, datastream<const char *> ds) : contr
                                                                            _receipts(get_self(), get_self().value),
                                                                            _teleports(get_self(), get_self().value) {}
 
-/* Notifications for tlm transfer */
+/* Notifications for START transfer */
 void teleporteos::transfer(name from, name to, asset quantity, string memo) {
     if (to == get_self()) {
-        check(quantity.amount >= 100'0000, "Transfer is below minimum of 100 TLM");
+        check(quantity.amount >= 100'0000, "Transfer is below minimum of 100 START");
 
         auto deposit = _deposits.find(from.value);
         if (deposit == _deposits.end()){
@@ -58,7 +58,7 @@ void teleporteos::teleport(name from, asset quantity, uint8_t chain_id, checksum
     check(quantity.is_valid(), "Amount is not valid");
     check(quantity.amount > 0, "Amount cannot be negative");
     check(quantity.symbol.is_valid(), "Invalid symbol name");
-    check(quantity.amount >= 100'0000, "Transfer is below minimum of 100 TLM");
+    check(quantity.amount >= 100'0000, "Transfer is below minimum of 100 START");
 
     auto deposit = _deposits.find(from.value);
     check(deposit != _deposits.end(), "Deposit not found, please transfer the tokens first");

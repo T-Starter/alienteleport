@@ -228,8 +228,8 @@ contract TeleportToken is ERC20Interface, Owned, Oracled, Verify {
     // Constructor
     // ------------------------------------------------------------------------
     constructor() public {
-        symbol = "TLM";
-        name = "Alien Worlds Trilium";
+        symbol = "START";
+        name = "T-Starter START";
         decimals = 4;
         _totalSupply = 10000000000 * 10**uint(decimals);
         balances[address(0)] = _totalSupply;

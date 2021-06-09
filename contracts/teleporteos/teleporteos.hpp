@@ -7,10 +7,10 @@ using namespace eosio;
 using namespace std;
 
 #define ORACLE_CONFIRMATIONS 3
-#define TOKEN_CONTRACT_STR "alien.worlds"
+#define TOKEN_CONTRACT_STR "token.start"
 #define TOKEN_CONTRACT name(TOKEN_CONTRACT_STR)
 
-namespace alienworlds {
+namespace tstarter {
     class [[eosio::contract("teleporteos")]] teleporteos : public contract {
       private:
         /* Represents a user deposit before teleporting */
@@ -84,7 +84,7 @@ namespace alienworlds {
 
         teleporteos(name s, name code, datastream<const char *> ds);
 
-        /* Fungible token transfer (only trilium) */
+        /* Fungible token transfer (only START) */
         [[eosio::on_notify(TOKEN_CONTRACT_STR "::transfer")]] void transfer(name from, name to, asset quantity, string memo);
 
         [[eosio::action]] void teleport(name from, asset quantity, uint8_t chain_id, checksum256 eth_address);
@@ -99,4 +99,4 @@ namespace alienworlds {
         [[eosio::action]] void delreceipts();
         [[eosio::action]] void delteles();
     };
-} // namespace alienworlds
+} // namespace tstarter
