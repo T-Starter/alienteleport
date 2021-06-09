@@ -231,7 +231,7 @@ contract TeleportToken is ERC20Interface, Owned, Oracled, Verify {
         symbol = "START";
         name = "T-Starter START";
         decimals = 4;
-        _totalSupply = 10000000000 * 10**uint(decimals);
+        _totalSupply = 100000000 * 10**uint(decimals);
         balances[address(0)] = _totalSupply;
         threshold = 3;
         thisChainId = 1;
