@@ -33,23 +33,23 @@ export default {
         }
     },
     data () {
-        const appName = 'Alien Worlds'
-        const endpointsWax = [process.env.waxEndpoint]
+        const appName = 'T-Starter'
+        const endpointsTelos = [process.env.telosEndpoint]
         // const network = 'wax'
 
-        const chainsWax = [{
-            chainId: process.env.waxChainId,
-            rpcEndpoints: [this.splitEndpoint(endpointsWax[0])]
+        const chainsTelos = [{
+            chainId: process.env.telosChainId,
+            rpcEndpoints: [this.splitEndpoint(endpointsTelos[0])]
         }]
 
         const authenticatorsWax = [
-            new Wax(chainsWax, { appName }),
-            new Scatter(chainsWax, { appName }),
-            new Anchor(chainsWax, { appName })
+            new Wax(chainsTelos, { appName }),
+            new Scatter(chainsTelos, { appName }),
+            new Anchor(chainsTelos, { appName })
         ]
 
         const chains = {
-            wax: chainsWax
+            wax: chainsTelos
         }
         const authenticators = {
             wax: authenticatorsWax

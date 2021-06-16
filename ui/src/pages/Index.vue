@@ -10,8 +10,8 @@
                             <h3 class="title">{{$t('transfer.from_to', {transferFrom, transferTo})}}</h3>
                             <div class="logo"></div>
                             <p>{{$t('transfer.liquid_balance')}}</p>
-                            <div class="balance" v-if="transferFrom == 'WAX'">{{waxTlmBalance}} START</div>
-                            <div class="balance" v-if="transferFrom != 'WAX'">{{ethTlmBalance}} START</div>
+                            <div class="balance" v-if="transferFrom == 'WAX'">{{telosStartBalance}} START</div>
+                            <div class="balance" v-if="transferFrom != 'WAX'">{{ethStartBalance}} START</div>
                             <form class="amount">
                                 <h6>{{$t('transfer.input_amount')}}</h6>
                                 <div class="fields">
@@ -90,8 +90,8 @@
                                 </div>
                                 <div class="accessed active" v-if="getAccountName.wax">
                                     <p>{{$t('home.liquid_balance')}}</p>
-                                    <div class="balance">{{waxTlmBalance}} START</div>
-                                    <div v-bind:class="['transfer', {active: getAccountName.ethereum && getAccountName.wax && !unsupportedChain}]" v-if="waxTlmBalance != 0">
+                                    <div class="balance">{{telosStartBalance}} START</div>
+                                    <div v-bind:class="['transfer', {active: getAccountName.ethereum && getAccountName.wax && !unsupportedChain}]" v-if="telosStartBalance != 0">
                                         <a class="button" @click="startTransfer('WAX', networkName)">{{$t('home.transfer')}}</a>
                                         <p class="notice" v-if="getAccountName.ethereum" v-html="$t('home.from_wax_to', {networkName})"></p>
                                     </div>
@@ -112,8 +112,8 @@
                                 </div>
                                 <div class="accessed active" v-if="getAccountName.ethereum && !unsupportedChain">
                                     <p>{{$t('home.liquid_balance')}}</p>
-                                    <div class="balance">{{ethTlmBalance}} START</div>
-                                    <div v-bind:class="['transfer', {active: getAccountName.ethereum && getAccountName.wax && !unsupportedChain}]" v-if="ethTlmBalance != 0">
+                                    <div class="balance">{{ethStartBalance}} START</div>
+                                    <div v-bind:class="['transfer', {active: getAccountName.ethereum && getAccountName.wax && !unsupportedChain}]" v-if="ethStartBalance != 0">
                                         <a class="button" @click="startTransfer(networkName, 'WAX')">{{$t('home.transfer')}}</a>
                                         <p class="notice" v-html="$t('home.from_to_wax', {networkName})"></p>
                                     </div>
@@ -224,8 +224,8 @@
         },
         data() {
             return {
-                ethTlmBalance: '0',
-                waxTlmBalance: '0',
+                ethStartBalance: '0',
+                telosStartBalance: '0',
                 networkName: '',
                 unsupportedChain: false,
                 showDashboard: false,
@@ -288,7 +288,7 @@
                 if (this.getAccountName.wax) {
                     console.log('getting balance', process.env.tlmContract, this.getAccountName.wax, 'START')
                     const balance = await this.$wax.rpc.get_currency_balance(process.env.tlmContract, this.getAccountName.wax, 'START')
-                    this.waxTlmBalance = Number(balance[0].replace(' START', '')).toLocaleString()
+                    this.telosStartBalance = Number(balance[0].replace(' START', '')).toLocaleString()
                 }
                 if (this.getChainId.ethereum && this.getAccountName.ethereum) {
                     const {injectedWeb3, web3} = await this.$web3()
@@ -306,7 +306,7 @@
                             console.log(tlmInstance)
                             const balance = await tlmInstance.methods.balanceOf(this.getAccountName.ethereum).call()
                             console.log(`Balance is ${balance}`, balance)
-                            this.ethTlmBalance = Number(balance / 10000).toLocaleString()
+                            this.ethStartBalance = Number(balance / 10000).toLocaleString()
                         }
                     }
                 }
