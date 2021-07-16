@@ -22,6 +22,12 @@ module.exports = {
             tlmContract: '0x5b6A8e651c4083177851D34409685977aE21e4ca',
             destinationChainId: 3,
             className: 'telos'
+        },
+        '80001': {
+            name: 'Matic',
+            tlmContract: '0x5b6A8e651c4083177851D34409685977aE21e4ca',
+            destinationChainId: 4,
+            className: 'matic'
         }
     }
 }

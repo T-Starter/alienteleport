@@ -10,7 +10,7 @@ it up and then send it to the ethereum chain in a claim action
 const config_file = process.env['CONFIG'] || './config';
 process.title = `oracle-eos ${config_file}`;
 
-const StateReceiver = require('@eosdacio/eosio-statereceiver');
+//const StateReceiver = require('@eosdacio/eosio-statereceiver');
 const {Api, JsonRpc, Serialize} = require('eosjs');
 const { JsSignatureProvider } = require('eosjs/dist/eosjs-jssig');
 const fetch = require('node-fetch');
