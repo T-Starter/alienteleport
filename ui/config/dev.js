@@ -1,8 +1,8 @@
 module.exports = {
-    waxEndpoint: 'https://wax.eosdac.io',
-    waxChainId: '1064487b3cd1a897ce03ae5b6a865651747e2e152090f99c1d19d44e01aea5a4',
-    tlmContract: 'alien.worlds',
-    teleportContract: 'other.worlds',
+    waxEndpoint: 'https://testnet.telos.caleos.io',
+    waxChainId: '1eaa0824707c8c16bd25145493bf062aecddfeb56c736f6ba6397f3195f33c9f',
+    tlmContract: 'token.start',
+    teleportContract: 'tport.start',
     ipfsRoot: 'https://ipfs.io/ipfs/',
     networks: {
         '1': {
@@ -13,13 +13,13 @@ module.exports = {
         },
         '3': {
             name: 'Ropsten Testnet',
-            tlmContract: '0x79C3EAb51c9b689766496ddb0bD187ccAec2b021',
+            tlmContract: '0x5b6A8e651c4083177851D34409685977aE21e4ca',
             destinationChainId: 1,
             className: 'ethereum'
         },
         '56': {
             name: 'BSC',
-            tlmContract: '0x2222227E22102Fe3322098e4CBfE18cFebD57c95',
+            tlmContract: '0x5b6A8e651c4083177851D34409685977aE21e4ca',
             destinationChainId: 2,
             className: 'binance'
         }

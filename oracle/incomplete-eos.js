@@ -12,7 +12,7 @@ const { JsSignatureProvider } = require('eosjs/dist/eosjs-jssig');
 const fetch = require('node-fetch');
 const { TextDecoder, TextEncoder } = require('text-encoding');
 
-const hyperion_endpoint = 'https://api.waxsweden.org';
+const hyperion_endpoint = 'https://testnet.telos.caleos.io';
 
 const config = require(config_file);
 
@@ -29,7 +29,6 @@ const run = async () => {
             code: config.eos.teleportContract,
             scope: config.eos.teleportContract,
             table: 'teleports',
-            lower_bound,
             limit: 100
         });
 
@@ -54,7 +53,7 @@ const run = async () => {
 
     for (let i = 0; i < incomplete.length; i++){
         try {
-            const url = `${hyperion_endpoint}/v2/history/get_actions?account=${incomplete[i].account}&filter=other.worlds:teleport&count=100`;
+            const url = `${hyperion_endpoint}/v2/history/get_actions?account=${incomplete[i].account}&filter=${config.eos.teleportContract}:teleport&count=100`;
             const res = await fetch(url);
             const json = await res.json();
             // console.log(json.actions[0])
@@ -67,7 +66,7 @@ const run = async () => {
             }
         }
         catch (e) {
-            // console.error(e.message);
+            console.error(e.message);
             i--;
         }
         // console.log(incomplete[i], JSON.stringify(missed), missed.act, missed.block_num);

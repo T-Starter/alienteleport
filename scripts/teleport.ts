@@ -13,13 +13,13 @@ export class Teleport {
 
     constructor() {
         // console.log(fetch)
-        this.rpc = new JsonRpc('https://wax.eosdac.io', {fetch});
+        this.rpc = new JsonRpc('https://testnet.telos.caleos.io', {fetch});
     }
 
     async getSignData(teleportId) {
         const res = await this.rpc.get_table_rows({
-            code: 'other.worlds',
-            scope: 'other.worlds',
+            code: 'tport.start',
+            scope: 'tport.start',
             table: 'teleports',
             lower_bound: teleportId,
             upper_bound: teleportId,
