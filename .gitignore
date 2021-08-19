@@ -2,3 +2,5 @@
 scripts
 node_modules
 oracle/config.js
+cache
+artifacts

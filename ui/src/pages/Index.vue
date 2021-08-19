@@ -234,7 +234,8 @@
                 showTransfer: false,
                 transferFrom: '',
                 transferTo: '',
-                teleports: []
+                teleports: [],
+                threshold: 1
             }
         },
         methods: {
@@ -456,6 +457,7 @@
                     const chainData = process.env.networks[this.getChainId.ethereum]
                     const tlmInstance = new web3.eth.Contract(this.$erc20Abi, chainData.tlmContract)
                     const resp = await tlmInstance.methods.claim(signData.data, signData.signatures).send({from: this.getAccountName.ethereum})
+                    console.log(resp)
 
                     await this.$store.commit('global/setInfo', $t('dialog.tlm_claimed'))
                     this.showOverlay = true
@@ -463,7 +465,6 @@
                     this.updateBalances()
                     this.loadTeleports()
 
-                    // console.log(resp)
                 }
             },
             async loadTeleports() {
@@ -485,7 +486,7 @@
                     res.rows.forEach(r => {
                         r.class = 'fromwax'
                         r.completed = r.claimed
-                        r.claimable = (r.oracles.length >= 3 && !r.completed)
+                        r.claimable = (r.oracles.length >= 1 && !r.completed)
                         r.correct_login = ('0x'+r.eth_address.substr(0, 40) == this.getAccountName.ethereum.toLowerCase())
                         r.correct_chain = false
                         if (this.getChainId.ethereum == 1 && r.chain_id === 1){
