@@ -30,8 +30,8 @@ describe("TeleportToken", function () {
   it("Can claim", async function () {
     let threw = false;
     try {
-      let sigData = "0x0100000000000000cf591e6190d5cc5865ffbf5e50690f000000000004535441525400000126b0ab0963ddf1aff3d545ff5849af2b2d84f9c5000000000000000000000000"
-      let signatures = ["0x682affdb96803b7477fefcbc4458780c9a495204cc8926419ed069e4464c00ab060001c488dcef9eb6703d6f1ec390a0a80d0eee78bc331b4585fca854a209181b"]
+      let sigData = "0x000000000000000013651e6190d5cc5865ffbf5e40420f000000000004535441525400000126b0ab0963ddf1aff3d545ff5849af2b2d84f9c5000000000000000000000000"
+      let signatures = ["0x7c2ecd5201f358de38931c27e8bc06d5b6a7edf53e0564e0e6525fc20a8b6da230e7f7ad76f9ed65290b40e3f777ec5860621a84482a8aec8545ad78d0c5ba071c"]
       await teleporttoken.claim(sigData, signatures);
     } catch (error) {
       threw = true;
