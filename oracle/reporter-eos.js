@@ -87,9 +87,9 @@ const run = async () => {
       sb.push(teleport.chain_id);
       sb.pushArray(fromHexString(teleport.eth_address));
 
-      const data_buf = Buffer.from("0x" + toHexString(sb.array.slice(0, 69)));
+      const data_buf = Buffer.from(sb.array.slice(0, 69));
       const msg_hash = ethUtil.keccak(data_buf);
-      console.log(msg_hash.toString("hex"));
+      console.log(msg_hash.toString('hex'));
       console.log(config.eth.privateKey);
       const pk = Buffer.from(config.eth.privateKey, "hex");
       const sig = ethUtil.ecsign(msg_hash, pk);
