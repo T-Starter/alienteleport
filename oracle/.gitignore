@@ -1,3 +1,2 @@
 node_modules
-config.js
-config1.js
+config*.js
