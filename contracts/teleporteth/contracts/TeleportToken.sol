@@ -401,10 +401,6 @@ contract TeleportToken is ERC20Interface, Owned, Oracled, Verify {
         for (uint8 i = 0; i < signatures.length; i++){
             address potential = Verify.recoverSigner(message, signatures[i]);
 
-            console.log("potential:", potential);
-            console.log("oracles[potentian]:", oracles[potential]);
-            console.log("!signed[td.id][potential]:", !signed[td.id][potential]);
-
             // Check that they are an oracle and they haven't signed twice
             if (oracles[potential] && !signed[td.id][potential]){
                 signed[td.id][potential] = true;
