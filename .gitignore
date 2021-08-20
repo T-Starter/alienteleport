@@ -1,7 +1,8 @@
 .idea
 scripts
 node_modules
-oracle/config.js
+oracle/config*.js
 cache
 artifacts
 .oracle*
+oracle/node_modules

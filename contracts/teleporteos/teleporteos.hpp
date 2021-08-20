@@ -1,24 +1,41 @@
 #include <eosio/asset.hpp>
 #include <eosio/eosio.hpp>
 #include <eosio/transaction.hpp>
+#include <eosio/singleton.hpp>
 #include <math.h>
 
 using namespace eosio;
 using namespace std;
 
-#define ORACLE_CONFIRMATIONS 3
-#define TOKEN_CONTRACT_STR "token.start"
-#define TOKEN_CONTRACT name(TOKEN_CONTRACT_STR)
-
 namespace tstarter {
     class [[eosio::contract("teleporteos")]] teleporteos : public contract {
       private:
+
+        /* bridge settings */
+        struct [[eosio::table("settings")]] settings {
+            name admin_account;
+            bool enabled = false;
+            uint32_t threshold = 3;
+        };
+        typedef eosio::singleton<"settings"_n, settings> settings_singleton;
+
+        /* supported tokens */
+        struct [[eosio::table("tokens")]] tokens_item {
+            extended_symbol token;
+            asset min_quantity;
+            bool enabled;
+            map <uint32_t, string> remote_contracts;
+
+            uint64_t primary_key() const { return token.get_symbol().code().raw(); }
+        };
+        typedef eosio::multi_index<"tokens"_n, tokens_item> tokens_table;
+
         /* Represents a user deposit before teleporting */
         struct [[eosio::table("deposits")]] deposit_item {
-            name  account;
-            asset quantity;
+            name token_contract;
+            asset balance;
 
-            uint64_t primary_key() const { return account.value; }
+            uint64_t primary_key()const { return balance.symbol.code().raw(); }
         };
         typedef multi_index<"deposits"_n, deposit_item> deposits_table;
 
@@ -28,6 +45,7 @@ namespace tstarter {
             uint64_t       id;
             uint32_t       time;
             name           account;
+            name           token_contract;
             asset          quantity;
             int8_t         chain_id;
             checksum256    eth_address;
@@ -67,6 +85,7 @@ namespace tstarter {
           name           to;
           uint8_t        chain_id;
           uint8_t        confirmations;
+          name           token_contract;
           asset          quantity;
           vector<name>   approvers;
           bool           completed;
@@ -80,7 +99,7 @@ namespace tstarter {
             indexed_by<"byto"_n, const_mem_fun<receipt_item, uint64_t, &receipt_item::by_to>>
         > receipts_table;
 
-        deposits_table    _deposits;
+//        deposits_table    _deposits;
         oracles_table     _oracles;
         receipts_table    _receipts;
         teleports_table   _teleports;
@@ -88,13 +107,21 @@ namespace tstarter {
 
         void require_oracle(name account);
 
+        settings get_settings();
+
       public:
         using contract::contract;
 
         teleporteos(name s, name code, datastream<const char *> ds);
 
         /* Fungible token transfer (only START) */
-        [[eosio::on_notify(TOKEN_CONTRACT_STR "::transfer")]] void transfer(name from, name to, asset quantity, string memo);
+//        [[eosio::on_notify(TOKEN_CONTRACT_STR "::transfer")]] void transfer(name from, name to, asset quantity, string memo);
+        [[eosio::on_notify("*::transfer")]] void transfer(name from, name to, asset quantity, string memo);
+
+        [[eosio::action]] void init( name admin_account, uint32_t threshold );
+        [[eosio::action]] void enable();
+        [[eosio::action]] void disable();
+        [[eosio::action]] void setthreshold( uint32_t threshold );
 
         [[eosio::action]] void teleport(name from, asset quantity, uint8_t chain_id, checksum256 eth_address);
         [[eosio::action]] void logteleport(uint64_t id, uint32_t timestamp, name from, asset quantity, uint8_t chain_id, checksum256 eth_address);
@@ -108,5 +135,10 @@ namespace tstarter {
         [[eosio::action]] void sign(string signature);
         [[eosio::action]] void delreceipts();
         [[eosio::action]] void delteles();
+
+        [[eosio::action]] void addtoken( const extended_symbol &token_symbol, const asset &min_quantity, bool enabled );
+        [[eosio::action]] void updatetoken( const extended_symbol &token_symbol, const asset &min_quantity, const bool &enabled );
+        [[eosio::action]] void addremote( const extended_symbol &token_symbol, const uint32_t &chain_id, const string &token_contract );
+
     };
 } // namespace tstarter

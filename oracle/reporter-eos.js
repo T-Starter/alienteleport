@@ -4,7 +4,7 @@
 Lists all incomplete teleports from eos -> eth
  */
 
-const config_file = process.env["CONFIG"] || "./config";
+const config_file = process.env["CONFIG"] || "./config1";
 process.title = `reporter-eos ${config_file}`;
 const config = require(config_file);
 
