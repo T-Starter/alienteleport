@@ -1,0 +1,18 @@
+version: '3'
+services:
+  reporter1:
+    command: "node reporter-eos.js"
+    build: 
+      context: .
+    image: "reporter:v1"
+    container_name: reporter1
+    volumes:
+      - ./oracle/config/config1.js:/home/node/app/reporter/config.js
+  reporter2:
+    command: "node reporter-eos.js"
+    build: 
+      context: .
+    image: "reporter:v1"
+    container_name: reporter2
+    volumes:
+      - ./oracle/config/config2.js:/home/node/app/reporter/config.js

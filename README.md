@@ -22,7 +22,7 @@ Oracles can then call the received function on each contract when they see a tra
 
 ### Setup and running
 
-1. Copy config-example.js to config.js
-2. Change the configuration settings to match your tokens
-3. Start the oracle using the following command `CONFIG=./[path/to/config] oracle-eos|eth.js`
+1. Create `oracle/config` directory, copy config-example.js to config/config1.js (for reporter 1).
+2. Change the configuration settings to match your tokens.
+3. Start the containers by running `run.sh`.
 

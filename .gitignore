@@ -2,6 +2,7 @@
 scripts
 node_modules
 oracle/config*.js
+oracle/config
 cache
 artifacts
 .oracle*
