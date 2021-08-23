@@ -16,6 +16,7 @@ namespace tstarter {
             name admin_account;
             bool enabled = false;
             uint32_t threshold = 3;
+            uint64_t last_teleport_id;
         };
         typedef eosio::singleton<"settings"_n, settings> settings_singleton;
 

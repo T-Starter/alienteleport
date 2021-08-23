@@ -4,6 +4,42 @@
     "types": [],
     "structs": [
         {
+            "name": "addremote",
+            "base": "",
+            "fields": [
+                {
+                    "name": "token_symbol",
+                    "type": "extended_symbol"
+                },
+                {
+                    "name": "chain_id",
+                    "type": "uint32"
+                },
+                {
+                    "name": "token_contract",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "addtoken",
+            "base": "",
+            "fields": [
+                {
+                    "name": "token_symbol",
+                    "type": "extended_symbol"
+                },
+                {
+                    "name": "min_quantity",
+                    "type": "asset"
+                },
+                {
+                    "name": "enabled",
+                    "type": "bool"
+                }
+            ]
+        },
+        {
             "name": "cancel",
             "base": "",
             "fields": [
@@ -60,12 +96,50 @@
             "base": "",
             "fields": [
                 {
-                    "name": "account",
+                    "name": "token_contract",
                     "type": "name"
                 },
                 {
-                    "name": "quantity",
+                    "name": "balance",
                     "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "disable",
+            "base": "",
+            "fields": []
+        },
+        {
+            "name": "enable",
+            "base": "",
+            "fields": []
+        },
+        {
+            "name": "extended_symbol",
+            "base": "",
+            "fields": [
+                {
+                    "name": "sym",
+                    "type": "symbol"
+                },
+                {
+                    "name": "contract",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "init",
+            "base": "",
+            "fields": [
+                {
+                    "name": "admin_account",
+                    "type": "name"
+                },
+                {
+                    "name": "threshold",
+                    "type": "uint32"
                 }
             ]
         },
@@ -110,6 +184,20 @@
             ]
         },
         {
+            "name": "pair_uint32_string",
+            "base": "",
+            "fields": [
+                {
+                    "name": "key",
+                    "type": "uint32"
+                },
+                {
+                    "name": "value",
+                    "type": "string"
+                }
+            ]
+        },
+        {
             "name": "receipt_item",
             "base": "",
             "fields": [
@@ -136,6 +224,10 @@
                 {
                     "name": "confirmations",
                     "type": "uint8"
+                },
+                {
+                    "name": "token_contract",
+                    "type": "name"
                 },
                 {
                     "name": "quantity",
@@ -188,6 +280,38 @@
                 {
                     "name": "oracle_name",
                     "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "setthreshold",
+            "base": "",
+            "fields": [
+                {
+                    "name": "threshold",
+                    "type": "uint32"
+                }
+            ]
+        },
+        {
+            "name": "settings",
+            "base": "",
+            "fields": [
+                {
+                    "name": "admin_account",
+                    "type": "name"
+                },
+                {
+                    "name": "enabled",
+                    "type": "bool"
+                },
+                {
+                    "name": "threshold",
+                    "type": "uint32"
+                },
+                {
+                    "name": "last_teleport_id",
+                    "type": "uint64"
                 }
             ]
         },
@@ -248,6 +372,10 @@
                     "type": "name"
                 },
                 {
+                    "name": "token_contract",
+                    "type": "name"
+                },
+                {
                     "name": "quantity",
                     "type": "asset"
                 },
@@ -274,12 +402,52 @@
             ]
         },
         {
+            "name": "tokens_item",
+            "base": "",
+            "fields": [
+                {
+                    "name": "token",
+                    "type": "extended_symbol"
+                },
+                {
+                    "name": "min_quantity",
+                    "type": "asset"
+                },
+                {
+                    "name": "enabled",
+                    "type": "bool"
+                },
+                {
+                    "name": "remote_contracts",
+                    "type": "pair_uint32_string[]"
+                }
+            ]
+        },
+        {
             "name": "unregoracle",
             "base": "",
             "fields": [
                 {
                     "name": "oracle_name",
                     "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "updatetoken",
+            "base": "",
+            "fields": [
+                {
+                    "name": "token_symbol",
+                    "type": "extended_symbol"
+                },
+                {
+                    "name": "min_quantity",
+                    "type": "asset"
+                },
+                {
+                    "name": "enabled",
+                    "type": "bool"
                 }
             ]
         },
@@ -299,6 +467,16 @@
         }
     ],
     "actions": [
+        {
+            "name": "addremote",
+            "type": "addremote",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "addtoken",
+            "type": "addtoken",
+            "ricardian_contract": ""
+        },
         {
             "name": "cancel",
             "type": "cancel",
@@ -320,6 +498,21 @@
             "ricardian_contract": ""
         },
         {
+            "name": "disable",
+            "type": "disable",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "enable",
+            "type": "enable",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "init",
+            "type": "init",
+            "ricardian_contract": ""
+        },
+        {
             "name": "logteleport",
             "type": "logteleport",
             "ricardian_contract": ""
@@ -335,6 +528,11 @@
             "ricardian_contract": ""
         },
         {
+            "name": "setthreshold",
+            "type": "setthreshold",
+            "ricardian_contract": ""
+        },
+        {
             "name": "sign",
             "type": "sign",
             "ricardian_contract": ""
@@ -347,6 +545,11 @@
         {
             "name": "unregoracle",
             "type": "unregoracle",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "updatetoken",
+            "type": "updatetoken",
             "ricardian_contract": ""
         },
         {
@@ -385,8 +588,22 @@
             "key_types": []
         },
         {
+            "name": "settings",
+            "type": "settings",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
             "name": "teleports",
             "type": "teleport_item",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "tokens",
+            "type": "tokens_item",
             "index_type": "i64",
             "key_names": [],
             "key_types": []

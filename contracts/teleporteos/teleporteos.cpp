@@ -125,6 +125,10 @@ void teleporteos::withdraw(name account, asset quantity) {
 }
 
 void teleporteos::teleport(name from, asset quantity, uint8_t chain_id, checksum256 eth_address) {
+    settings_singleton settings_table(get_self(), get_self().value);
+    check(settings_table.exists(), "contract not initialised");
+    auto settings = settings_table.get();
+
     require_auth(from);
 
     check(quantity.is_valid(), "Amount is not valid");
@@ -148,7 +152,9 @@ void teleporteos::teleport(name from, asset quantity, uint8_t chain_id, checksum
     }
 
     auto token_contract = deposit->token_contract;
-    uint64_t next_teleport_id = _teleports.available_primary_key();
+    settings.last_teleport_id += 1;
+    uint64_t next_teleport_id = settings.last_teleport_id;
+    settings_table.set(settings, get_self());
     uint32_t now = current_time_point().sec_since_epoch();
     _teleports.emplace(from, [&](auto &t){
         t.id = next_teleport_id;
