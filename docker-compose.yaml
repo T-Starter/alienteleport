@@ -1,18 +1,34 @@
 version: '3'
 services:
-  reporter1:
+  reporter1-eos:
     command: "node reporter-eos.js"
     build: 
       context: .
     image: "reporter:v1"
-    container_name: reporter1
+    container_name: reporter1-eos
     volumes:
       - ./oracle/config/config1.js:/home/node/app/reporter/config.js
-  reporter2:
+  reporter2-eos:
     command: "node reporter-eos.js"
     build: 
       context: .
     image: "reporter:v1"
-    container_name: reporter2
+    container_name: reporter2-eos
+    volumes:
+      - ./oracle/config/config2.js:/home/node/app/reporter/config.js
+  reporter1-eth:
+    command: "node oracle-eth.js"
+    build: 
+      context: .
+    image: "reporter:v1"
+    container_name: reporter1-eth
+    volumes:
+      - ./oracle/config/config1.js:/home/node/app/reporter/config.js
+  reporter2-eth:
+    command: "node oracle-eth.js"
+    build: 
+      context: .
+    image: "reporter:v1"
+    container_name: reporter2-eth
     volumes:
       - ./oracle/config/config2.js:/home/node/app/reporter/config.js
