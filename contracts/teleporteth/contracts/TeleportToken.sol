@@ -1,4 +1,4 @@
-pragma solidity ^0.6.12;
+pragma solidity ^0.8.7;
 /*
  * SPDX-License-Identifier: MIT
  */
@@ -149,7 +149,7 @@ contract Owned {
 
     event OwnershipTransferred(address indexed _from, address indexed _to);
 
-    constructor() public {
+    constructor() {
         owner = msg.sender;
     }
 
@@ -229,14 +229,14 @@ contract TeleportToken is ERC20Interface, Owned, Oracled, Verify {
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
-    constructor() public {
-        symbol = "START";
-        name = "T-Starter START";
-        decimals = 4;
-        _totalSupply = 100000000 * 10**uint(decimals);
-        balances[address(0)] = _totalSupply;
-        threshold = 3;
-        thisChainId = 1;
+    constructor(string memory _symbol, string memory _name, uint8 _decimals, uint __totalSupply, uint8 _threshold, uint8 _thisChainId) payable {
+        symbol = _symbol;
+        name = _name;
+        decimals = _decimals;
+        _totalSupply = __totalSupply * 10**uint(_decimals);
+        balances[address(0)] = __totalSupply;
+        threshold = _threshold;
+        thisChainId = _thisChainId;
     }
 
 
@@ -342,6 +342,10 @@ contract TeleportToken is ERC20Interface, Owned, Oracled, Verify {
         return true;
     }
 
+    // ------------------------------------------------------------------------
+    // Claim tokens sent using signatures supplied to the other chain
+    // ------------------------------------------------------------------------
+
     function stringToBytes32(string memory source) public pure returns (bytes32 result) {
         bytes memory tempEmptyStringTest = bytes(source);
         if (tempEmptyStringTest.length == 0) {
@@ -352,11 +356,6 @@ contract TeleportToken is ERC20Interface, Owned, Oracled, Verify {
             result := mload(add(source, 32))
         }
     }
-
-    // ------------------------------------------------------------------------
-    // Claim tokens sent using signatures supplied to the other chain
-    // ------------------------------------------------------------------------
-
 
     function verifySigData(bytes memory sigData) private returns (TeleportData memory) {
         TeleportData memory td;

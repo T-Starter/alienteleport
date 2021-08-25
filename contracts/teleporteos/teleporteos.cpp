@@ -134,7 +134,7 @@ void teleporteos::teleport(name from, asset quantity, uint8_t chain_id, checksum
     check(quantity.is_valid(), "Amount is not valid");
     check(quantity.amount > 0, "Amount cannot be negative");
     check(quantity.symbol.is_valid(), "Invalid symbol name");
-    check(quantity.amount >= 100'0000, "Transfer is below minimum of 100 START");
+    check(quantity.amount >= 100'0000, "Transfer is below minimum of 100 START"); // TODO get minimum from table
 
     deposits_table _deposits(get_self(), from.value);
     auto deposit = _deposits.find(quantity.symbol.code().raw());
