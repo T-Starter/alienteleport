@@ -342,6 +342,16 @@ contract TeleportToken is ERC20Interface, Owned, Oracled, Verify {
         return true;
     }
 
+    function stringToBytes32(string memory source) public pure returns (bytes32 result) {
+        bytes memory tempEmptyStringTest = bytes(source);
+        if (tempEmptyStringTest.length == 0) {
+            return 0x0;
+        }
+
+        assembly {
+            result := mload(add(source, 32))
+        }
+    }
 
     // ------------------------------------------------------------------------
     // Claim tokens sent using signatures supplied to the other chain
@@ -358,17 +368,17 @@ contract TeleportToken is ERC20Interface, Owned, Oracled, Verify {
         uint64 symbolRaw;
         uint8 chainId;
         address toAddress;
-
+        uint64 requiredSymbolRaw;
+        
         assembly {
             id := mload(add(add(sigData, 0x8), 0))
             ts := mload(add(add(sigData, 0x4), 8))
             fromAddr := mload(add(add(sigData, 0x8), 12))
             quantity := mload(add(add(sigData, 0x8), 20))
-            symbolRaw := mload(add(add(sigData, 0x8), 28))
+            symbolRaw := mload(add(add(sigData, 0x8), 29))
             chainId := mload(add(add(sigData, 0x1), 36))
-            toAddress := mload(add(add(sigData, 0x14), 37))
+            toAddress := mload(add(add(sigData, 0x14), 37))            
         }
-
         td.id = Endian.reverse64(id);
         td.ts = Endian.reverse32(ts);
         td.fromAddr = Endian.reverse64(fromAddr);
@@ -377,9 +387,10 @@ contract TeleportToken is ERC20Interface, Owned, Oracled, Verify {
         td.chainId = chainId;
         td.toAddress = toAddress;
 
+        requiredSymbolRaw = uint64(bytes8(stringToBytes32(TeleportToken.symbol)));
+        require(requiredSymbolRaw == symbolRaw-1, "Wrong symbol");
         require(thisChainId == td.chainId, "Invalid Chain ID");
         require(block.timestamp < SafeMath.add(td.ts, (60 * 60 * 24 * 30)), "Teleport has expired");
-
         require(!claimed[td.id], "Already Claimed");
 
         claimed[td.id] = true;
