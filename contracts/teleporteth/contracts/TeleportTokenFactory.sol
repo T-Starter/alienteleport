@@ -7,7 +7,7 @@ pragma experimental ABIEncoderV2;
 import "hardhat/console.sol";
 import "./TeleportToken.sol";
 
-contract TeleportTokenFactory {
+contract TeleportTokenFactory is Owned {
     TeleportToken[] public teleporttokens;
     uint256 public creationFee = 0.1 ether;
 
@@ -29,7 +29,6 @@ contract TeleportTokenFactory {
             _threshold,
             _thisChainId
         );
-        // TODO give ownership to the owner
         tt.transferOwnership(msg.sender);
         teleporttokens.push(tt);
     }
@@ -48,9 +47,8 @@ contract TeleportTokenFactory {
         );
     }
 
-    // // TODO set fee
-    // function setFee(uint256 _fee) public onlyOwner {
-    //     creationFee = _fee;
-    // }
+    function setFee(uint256 _fee) public onlyOwner {
+        creationFee = _fee;
+    }
 
 }

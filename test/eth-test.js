@@ -57,17 +57,19 @@ describe("TeleportToken", function () {
 describe("TeleportTokenFactory", function () {
   let TeleportTokenFactory;
   let teleporttokenfactory;
-  let owner, addr1;
+  let owner, addr1, newowner;
 
   before(async function () {
     // Deploy contract
-    [owner, addr1] = await ethers.getSigners();
+    [owner, addr1, newowner] = await ethers.getSigners();
     TeleportTokenFactory = await ethers.getContractFactory(
       "TeleportTokenFactory"
     );
     teleporttokenfactory = await TeleportTokenFactory.deploy();
-    await teleporttokenfactory.deployed();
+    await teleporttokenfactory.connect(owner).deployed({from: owner.address});
     console.log(teleporttokenfactory.address);
+    // console.log(owner.address);
+    // console.log(await teleporttokenfactory.owner());
   });
 
   it("Create token with fee", async function () {
@@ -89,8 +91,13 @@ describe("TeleportTokenFactory", function () {
     expect(contractOwner).to.be.equal(addr1.address);
   });
 
-  // it("Can transfer ownership", async function () {
-  //   let token = await teleporttokenfactory.getToken(0);
-  //   await token.transferOwnership(addr1, { from: addr1.address });
-  // });
+  it("Can transfer factory ownership", async function () {
+    let receipt = await teleporttokenfactory
+      .connect(owner)
+      .transferOwnership(newowner.address, {from: owner.address});
+    // console.log(receipt);
+    await teleporttokenfactory.connect(newowner).acceptOwnership({from: newowner.address});
+
+    expect(await teleporttokenfactory.owner()).to.be.equal(newowner.address);
+  });
 });
