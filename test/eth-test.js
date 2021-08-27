@@ -66,7 +66,7 @@ describe("TeleportTokenFactory", function () {
       "TeleportTokenFactory"
     );
     teleporttokenfactory = await TeleportTokenFactory.deploy();
-    await teleporttokenfactory.connect(owner).deployed({from: owner.address});
+    await teleporttokenfactory.connect(owner).deployed({ from: owner.address });
     console.log(teleporttokenfactory.address);
     // console.log(owner.address);
     // console.log(await teleporttokenfactory.owner());
@@ -84,20 +84,33 @@ describe("TeleportTokenFactory", function () {
 
   it("Has correct ownership", async function () {
     let tokenAddress = await teleporttokenfactory.getTokenAddress(0);
-    const TT = await ethers.getContractFactory('TeleportToken');
+    const TT = await ethers.getContractFactory("TeleportToken");
     const tokenContract = await TT.attach(tokenAddress);
-    await tokenContract.connect(addr1).acceptOwnership({from: addr1.address});
+    await tokenContract.connect(addr1).acceptOwnership({ from: addr1.address });
     let contractOwner = await tokenContract.owner();
     expect(contractOwner).to.be.equal(addr1.address);
   });
 
-  it("Can transfer factory ownership", async function () {
+  it("Transfer factory ownership", async function () {
     let receipt = await teleporttokenfactory
       .connect(owner)
-      .transferOwnership(newowner.address, {from: owner.address});
+      .transferOwnership(newowner.address, { from: owner.address });
     // console.log(receipt);
-    await teleporttokenfactory.connect(newowner).acceptOwnership({from: newowner.address});
+    await teleporttokenfactory
+      .connect(newowner)
+      .acceptOwnership({ from: newowner.address });
 
     expect(await teleporttokenfactory.owner()).to.be.equal(newowner.address);
+  });
+
+  it("Set factory fee", async function () {
+    let receipt = await teleporttokenfactory
+      .connect(newowner)
+      .setFee(ethers.utils.parseEther("0.5"), { from: newowner.address });
+    // console.log(receipt);
+    // console.log((await teleporttokenfactory.creationFee()).toString());
+    expect(await teleporttokenfactory.creationFee()).to.be.equal(
+      ethers.utils.parseEther("0.5")
+    );
   });
 });
