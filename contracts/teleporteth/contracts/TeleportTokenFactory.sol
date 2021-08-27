@@ -9,33 +9,48 @@ import "./TeleportToken.sol";
 
 contract TeleportTokenFactory {
     TeleportToken[] public teleporttokens;
+    uint256 public creationFee = 0.1 ether;
 
-    function create(string memory _symbol, string memory _name, uint8 _decimals, uint __totalSupply, uint8 _threshold, uint8 _thisChainId) public {
-        TeleportToken tt = new TeleportToken( _symbol, _name, _decimals, __totalSupply, _threshold, _thisChainId);
+    function create(
+        string memory _symbol,
+        string memory _name,
+        uint8 _decimals,
+        uint256 __totalSupply,
+        uint8 _threshold,
+        uint8 _thisChainId
+    ) public payable {
+        // correct fee
+        require(msg.value == creationFee, "Wrong fee");
+        TeleportToken tt = new TeleportToken(
+            _symbol,
+            _name,
+            _decimals,
+            __totalSupply,
+            _threshold,
+            _thisChainId
+        );
+        // TODO give ownership to the owner
+        tt.transferOwnership(msg.sender);
         teleporttokens.push(tt);
     }
 
-    function createAndSendEther(string memory _symbol, string memory _name, uint8 _decimals, uint __totalSupply, uint8 _threshold, uint8 _thisChainId) public payable {
-        TeleportToken tt = (new TeleportToken){value: msg.value}( _symbol, _name, _decimals, __totalSupply, _threshold, _thisChainId);
-        teleporttokens.push(tt);
-    }
-
-    function getToken(uint _index)
+    function getTokenAddress(uint256 _index)
         public
         view
         returns (
-            address owner,
-            uint balance,
-            string memory symbol,
-            string memory name,
-            uint8 decimals,
-            uint totalSupply,
-            uint8 threshold,
-            uint8 thisChainId
+            address ttAddress
         )
     {
         TeleportToken tt = teleporttokens[_index];
 
-        return (tt.owner(), address(tt).balance, tt.symbol(), tt.name(), tt.decimals(), tt.totalSupply(), tt.threshold(), tt.thisChainId());
+        return (
+            address(tt)
+        );
     }
+
+    // // TODO set fee
+    // function setFee(uint256 _fee) public onlyOwner {
+    //     creationFee = _fee;
+    // }
+
 }

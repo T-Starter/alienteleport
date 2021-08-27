@@ -229,7 +229,7 @@ contract TeleportToken is ERC20Interface, Owned, Oracled, Verify {
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
-    constructor(string memory _symbol, string memory _name, uint8 _decimals, uint __totalSupply, uint8 _threshold, uint8 _thisChainId) payable {
+    constructor(string memory _symbol, string memory _name, uint8 _decimals, uint __totalSupply, uint8 _threshold, uint8 _thisChainId) {
         symbol = _symbol;
         name = _name;
         decimals = _decimals;
