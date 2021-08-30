@@ -191,7 +191,7 @@ const process_teleported = async (from_block, to_block) => {
 
             let tokensList = tokensTable.rows.filter(token => token.enabled == 1);
             let tokenAddrList = [...new Set(tokensList.map(r => r.remote_contracts).flat().map(r => r.value))];
-            console.log(tokensList);
+            // console.log(tokensList);
 
             for (const tokenAddress of tokenAddrList){
                 // find token from tokenAddress in tokensList
@@ -207,7 +207,7 @@ const process_teleported = async (from_block, to_block) => {
                 };
                 // console.log(query);
                 const res = await provider.getLogs(query);
-                console.log(res);
+                // console.log(res);
                 if (res.length){
                     for (let r = 0; r < res.length; r++){
                         const data = await ethers.utils.defaultAbiCoder.decode([ 'string', 'uint', 'uint' ], res[r].data);
