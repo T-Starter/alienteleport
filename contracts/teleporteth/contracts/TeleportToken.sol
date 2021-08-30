@@ -1,4 +1,4 @@
-pragma solidity ^0.8.7;
+pragma solidity ^0.8.6;
 /*
  * SPDX-License-Identifier: MIT
  */
@@ -411,6 +411,9 @@ contract TeleportToken is ERC20Interface, Owned, Oracled, Verify {
         for (uint8 i = 0; i < signatures.length; i++){
             address potential = Verify.recoverSigner(message, signatures[i]);
 
+            // console.log(potential);
+            // console.log(oracles[potential]);
+            // console.log(!signed[td.id][potential]);
             // Check that they are an oracle and they haven't signed twice
             if (oracles[potential] && !signed[td.id][potential]){
                 signed[td.id][potential] = true;

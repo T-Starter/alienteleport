@@ -58,6 +58,7 @@ describe("TeleportTokenFactory", function () {
   let TeleportTokenFactory;
   let teleporttokenfactory;
   let owner, addr1, newowner;
+  let newToken;
 
   before(async function () {
     // Deploy contract
@@ -75,21 +76,61 @@ describe("TeleportTokenFactory", function () {
   it("Create token with fee", async function () {
     let receipt = await teleporttokenfactory
       .connect(addr1)
-      .create("START", "T-starter START", 4, 1000000000000, 2, 1, {
+      .create("DEWIE", "dewaldtokens", 4, 1000000000000, 1, 1, {
         from: addr1.address,
         value: ethers.utils.parseEther("0.1"),
       });
-    // console.log(receipt);
+    let tokenAddress = await teleporttokenfactory.getTokenAddress(0);
+    const TT = await ethers.getContractFactory("TeleportToken");
+    newToken = await TT.attach(tokenAddress);
+    // expect(isOracle).to.be.true;
+    // console.log(isOracle);
   });
 
   it("Has correct ownership", async function () {
-    let tokenAddress = await teleporttokenfactory.getTokenAddress(0);
-    const TT = await ethers.getContractFactory("TeleportToken");
-    const tokenContract = await TT.attach(tokenAddress);
-    await tokenContract.connect(addr1).acceptOwnership({ from: addr1.address });
-    let contractOwner = await tokenContract.owner();
+    await newToken.connect(addr1).acceptOwnership({ from: addr1.address });
+    let contractOwner = await newToken.owner();
     expect(contractOwner).to.be.equal(addr1.address);
   });
+
+  it("Register oracles", async function () {
+    // register oracles
+    await newToken.connect(addr1).regOracle("0x59023f49315113deb856106d05699a3a2dc78bb8", {from: addr1.address});
+    let isOracle = await newToken.oracles(
+      "0x59023f49315113deb856106d05699a3a2dc78bb8"
+    );
+    expect(isOracle).to.be.true;
+  });
+
+  it("Set factory fee", async function () {
+    let receipt = await teleporttokenfactory
+      .connect(owner)
+      .setFee(ethers.utils.parseEther("0.5"), { from: owner.address });
+    // console.log(receipt);
+    // console.log((await teleporttokenfactory.creationFee()).toString());
+    expect(await teleporttokenfactory.creationFee()).to.be.equal(
+      ethers.utils.parseEther("0.5")
+    );
+  });
+
+  it("Can claim another token", async function () {
+    let threw = false;
+    try {
+      let sigData =
+        "0x0d00000000000000e2a62c6190d5cc5865ffbf5e60900f000000000004444557494500000126b0ab0963ddf1aff3d545ff5849af2b2d84f9c5000000000000000000000000";
+      let signatures = [
+        "0xd9e89fda3ce80c1b0f27ed53fae80ebfbc6041d4159de932aa1a9c8365f7221a668dcbba108adb7ea3a7fc15daac72a198d8cbafe7472bb188a31e95d53959891b",
+        "0xb57a08a981770869345f1239ff3fddd51ef978cde6f742ad36fa6f9c69cdf07333f52ccb3ed59a2c0ab8b02fbd03212e924a0f9c8c84635272eac0f211ead1541b",
+      ];
+      await newToken.claim(sigData, signatures);
+    } catch (error) {
+      threw = true;
+      console.log(error);
+    }
+    expect(threw).to.be.false;
+  });
+
+  // TODO Test receive and send ether
 
   it("Transfer factory ownership", async function () {
     let receipt = await teleporttokenfactory
@@ -101,16 +142,5 @@ describe("TeleportTokenFactory", function () {
       .acceptOwnership({ from: newowner.address });
 
     expect(await teleporttokenfactory.owner()).to.be.equal(newowner.address);
-  });
-
-  it("Set factory fee", async function () {
-    let receipt = await teleporttokenfactory
-      .connect(newowner)
-      .setFee(ethers.utils.parseEther("0.5"), { from: newowner.address });
-    // console.log(receipt);
-    // console.log((await teleporttokenfactory.creationFee()).toString());
-    expect(await teleporttokenfactory.creationFee()).to.be.equal(
-      ethers.utils.parseEther("0.5")
-    );
   });
 });

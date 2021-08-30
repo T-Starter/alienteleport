@@ -1,15 +1,49 @@
-pragma solidity ^0.8.7;
+pragma solidity ^0.8.6;
 /*
  * SPDX-License-Identifier: MIT
  */
 pragma experimental ABIEncoderV2;
 
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
 import "./TeleportToken.sol";
 
 contract TeleportTokenFactory is Owned {
     TeleportToken[] public teleporttokens;
     uint256 public creationFee = 0.1 ether;
+
+    // Payable constructor can receive Ether
+    constructor() payable {
+    }
+
+    // Function to deposit Ether into this contract.
+    // Call this function along with some Ether.
+    // The balance of this contract will be automatically updated.
+    function deposit() public payable {}
+
+    // Call this function along with some Ether.
+    // The function will throw an error since this function is not payable.
+    function notPayable() public {}
+
+    // Function to withdraw all Ether from this contract.
+    function withdraw() onlyOwner public {
+        // get the amount of Ether stored in this contract
+        uint amount = address(this).balance;
+
+        // send all Ether to owner
+        // Owner can receive Ether since the address of owner is payable
+        (bool success, ) = owner.call{value: amount}("");
+        require(success, "Failed to send Ether");
+    }
+
+    // Function to receive Ether. msg.data must be empty
+    receive() external payable {}
+
+    // Fallback function is called when msg.data is not empty
+    fallback() external payable {}
+
+    function getBalance() public view returns (uint) {
+        return address(this).balance;
+    }
 
     function create(
         string memory _symbol,
@@ -30,6 +64,8 @@ contract TeleportTokenFactory is Owned {
             _thisChainId
         );
         tt.transferOwnership(msg.sender);
+        // TODO register oracles
+        
         teleporttokens.push(tt);
     }
 

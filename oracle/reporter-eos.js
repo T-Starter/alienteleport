@@ -4,7 +4,7 @@
 Lists all incomplete teleports from eos -> eth
  */
 
-const config_file = process.env["CONFIG"] || "./config";
+const config_file = process.env["CONFIG"] || "./config2";
 process.title = `reporter-eos ${config_file}`;
 const config = require(config_file);
 
@@ -60,7 +60,7 @@ const run = async () => {
       // console.log(res);
 
       res.rows.forEach((r) => {
-        if (r.signatures.length < 1) {
+        if (r.signatures.length < 2) {
           rows.push(r);
         }
       });
@@ -97,7 +97,7 @@ const run = async () => {
 
           const data_buf = Buffer.from(sb.array.slice(0, 69));
           const msg_hash = ethUtil.keccak(data_buf);
-          // console.log(msg_hash.toString("hex"));
+          console.log(msg_hash.toString("hex"));
           // console.log(config.eth.privateKey);
           const pk = Buffer.from(config.eth.privateKey, "hex");
           const sig = ethUtil.ecsign(msg_hash, pk);
