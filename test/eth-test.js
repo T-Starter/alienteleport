@@ -74,6 +74,8 @@ describe("TeleportTokenFactory", function () {
   });
 
   it("Create token with fee", async function () {
+    // let balance = await ethers.provider.getBalance(addr1.address);
+    // console.log(balance.toString());
     let receipt = await teleporttokenfactory
       .connect(addr1)
       .create("DEWIE", "dewaldtokens", 4, 1000000000000, 1, 1, {
@@ -83,6 +85,8 @@ describe("TeleportTokenFactory", function () {
     let tokenAddress = await teleporttokenfactory.getTokenAddress(0);
     const TT = await ethers.getContractFactory("TeleportToken");
     newToken = await TT.attach(tokenAddress);
+    // balance = await ethers.provider.getBalance(addr1.address);
+    // console.log(balance.toString());
     // expect(isOracle).to.be.true;
     // console.log(isOracle);
   });
@@ -95,7 +99,11 @@ describe("TeleportTokenFactory", function () {
 
   it("Register oracles", async function () {
     // register oracles
-    await newToken.connect(addr1).regOracle("0x59023f49315113deb856106d05699a3a2dc78bb8", {from: addr1.address});
+    await newToken
+      .connect(addr1)
+      .regOracle("0x59023f49315113deb856106d05699a3a2dc78bb8", {
+        from: addr1.address,
+      });
     let isOracle = await newToken.oracles(
       "0x59023f49315113deb856106d05699a3a2dc78bb8"
     );
@@ -131,6 +139,23 @@ describe("TeleportTokenFactory", function () {
   });
 
   // TODO Test receive and send ether
+  it("Can withdraw ether", async function () {
+    let threw = false;
+    // let balance = await ethers.provider.getBalance(owner.address);
+    // console.log(balance.toString());
+    try {
+      let receipt = await teleporttokenfactory
+        .connect(owner)
+        .withdraw({ from: owner.address });
+      // console.log(receipt);
+    } catch (error) {
+      threw = true;
+      console.log(error);
+    }
+    // balance = await ethers.provider.getBalance(owner.address);
+    // console.log(balance.toString());
+    expect(threw).to.be.false;
+  });
 
   it("Transfer factory ownership", async function () {
     let receipt = await teleporttokenfactory

@@ -63,9 +63,9 @@ contract TeleportTokenFactory is Owned {
             _threshold,
             _thisChainId
         );
-        tt.transferOwnership(msg.sender);
         // TODO register oracles
-        
+        tt.transferOwnership(msg.sender);
+
         teleporttokens.push(tt);
     }
 
