@@ -9,7 +9,7 @@ import "./TeleportToken.sol";
 
 contract TeleportTokenFactory is Owned {
     TeleportToken[] public teleporttokens;
-    uint256 public creationFee = 0.1 ether;
+    uint256 public creationFee = 0.01 ether;
 
     // Payable constructor can receive Ether
     constructor() payable {

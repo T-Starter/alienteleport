@@ -14,10 +14,11 @@ describe("TeleportToken", function () {
       4,
       1000000000000,
       2,
-      1
+      3
     );
     await teleporttoken.deployed();
-    // console.log(teleporttoken.address);
+    // teleporttoken = await TeleportToken.attach("0xde2EEea2a7F9E9489C01aaF0530afd08Cfae45a7");
+    console.log(teleporttoken.address);
   });
 
   it("Oracle is registered", async function () {
@@ -25,6 +26,16 @@ describe("TeleportToken", function () {
     await teleporttoken.regOracle("0x59023f49315113deb856106d05699a3a2dc78bb8");
     let isOracle = await teleporttoken.oracles(
       "0x59023f49315113deb856106d05699a3a2dc78bb8"
+    );
+    expect(isOracle).to.be.true;
+    await teleporttoken.regOracle("0xbc25948d1dd62a5777ab33ffe3cc0e61107043be");
+    isOracle = await teleporttoken.oracles(
+      "0xbc25948d1dd62a5777ab33ffe3cc0e61107043be"
+    );
+    expect(isOracle).to.be.true;
+    await teleporttoken.regOracle("0xfb18e6e108987aeb4f5f2b17a2b18790ffa8ba8b");
+    isOracle = await teleporttoken.oracles(
+      "0xfb18e6e108987aeb4f5f2b17a2b18790ffa8ba8b"
     );
     expect(isOracle).to.be.true;
   });
@@ -40,10 +51,11 @@ describe("TeleportToken", function () {
     let threw = false;
     try {
       let sigData =
-        "0x0b00000000000000193f266190d5cc5865ffbf5e50690f000000000004535441525400000126b0ab0963ddf1aff3d545ff5849af2b2d84f9c5000000000000000000000000";
+        "0x3d00000000000000cf08376190d5cc5865ffbf5e40420f00000000000453544152540000032b8958a4965f7f02aeb112f656cb56d5b157ed35000000000000000000000000";
       let signatures = [
-        "0x490c499eae001173c1b1f4755136465c34488ef51e1c11dd701bb7ed068cd09d32c4167b5bfff49e8eac30aaff700dbfc9f4fbc87ffa56f0ece849ce3cd63abb1b",
-        "0x3aeae80d6d8847e179367b0bf74d6cc12a4b53697000b8a5f0db2483fce269902ca1727caddf4cc368c96d2f785f7b19cb30d77e015fb8c359d251166e86e9831b",
+        "0x59d80914d424e53300c886cbf89a1ccfc47d6d98bc38a5a04e2b239231946f7e52157d7ac479a750402f4d62aa90998e861056db6eb293f61aea831f68b060791c",
+        "0xbd260149e2d3c1ebfbbfc90d72a4688f3f1a8114977a276bea3dcc165c4123654d280ba5f59d0dc5b2a34ef23dc3120a4fd3134e9b9e07519df6d36e711fdb151b",
+        "0x4f4895de8111a71ec3b704b08d0e70a4f7a20a2cd412016fa5802bc5ca611fdd324b2755ff962a50cb343af02fbbe44bb1e01e98b3f2edead99c7586fc7ea9851b"
       ];
       await teleporttoken.claim(sigData, signatures);
     } catch (error) {
@@ -68,6 +80,7 @@ describe("TeleportTokenFactory", function () {
     );
     teleporttokenfactory = await TeleportTokenFactory.deploy();
     await teleporttokenfactory.connect(owner).deployed({ from: owner.address });
+    // teleporttokenfactory = await TeleportTokenFactory.attach("0x24DE774a0685497fe8A5908Ef2F352C5bA14223C");
     console.log(teleporttokenfactory.address);
     // console.log(owner.address);
     // console.log(await teleporttokenfactory.owner());
@@ -76,11 +89,12 @@ describe("TeleportTokenFactory", function () {
   it("Create token with fee", async function () {
     // let balance = await ethers.provider.getBalance(addr1.address);
     // console.log(balance.toString());
+    // console.log(addr1.address);
     let receipt = await teleporttokenfactory
       .connect(addr1)
-      .create("DEWIE", "dewaldtokens", 4, 1000000000000, 1, 1, {
+      .create("DEWIE", "dewaldtokens", 4, 1000000000000, 1, 3, {
         from: addr1.address,
-        value: ethers.utils.parseEther("0.1"),
+        value: ethers.utils.parseEther("0.5"),
       });
     let tokenAddress = await teleporttokenfactory.getTokenAddress(0);
     const TT = await ethers.getContractFactory("TeleportToken");

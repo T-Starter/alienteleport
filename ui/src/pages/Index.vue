@@ -498,6 +498,9 @@
                         else if (this.getChainId.ethereum == 56 && r.chain_id === 2){
                             r.correct_chain = true
                         }
+                        else if (this.getChainId.ethereum == 41 && r.chain_id === 3){
+                            r.correct_chain = true
+                        }
                         teleports.push(r)
                     })
 

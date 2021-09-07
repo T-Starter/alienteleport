@@ -4,7 +4,7 @@ pragma solidity ^0.8.6;
  */
 pragma experimental ABIEncoderV2;
 
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
 
 
 contract Verify {
@@ -387,7 +387,7 @@ contract TeleportToken is ERC20Interface, Owned, Oracled, Verify {
         td.toAddress = toAddress;
 
         requiredSymbolRaw = uint64(bytes8(stringToBytes32(TeleportToken.symbol)));
-        require(requiredSymbolRaw == symbolRaw-1, "Wrong symbol");
+        require(requiredSymbolRaw == symbolRaw-td.chainId, "Wrong symbol");
         require(thisChainId == td.chainId, "Invalid Chain ID");
         require(block.timestamp < SafeMath.add(td.ts, (60 * 60 * 24 * 30)), "Teleport has expired");
         require(!claimed[td.id], "Already Claimed");
