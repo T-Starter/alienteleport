@@ -92,9 +92,9 @@ describe("TeleportTokenFactory", function () {
     // console.log(addr1.address);
     let receipt = await teleporttokenfactory
       .connect(addr1)
-      .create("DEWIE", "dewaldtokens", 4, 1000000000000, 1, 3, {
+      .create("DEWIE", "dewaldtokens", 4, 1000000000000, 1, 1, {
         from: addr1.address,
-        value: ethers.utils.parseEther("0.5"),
+        value: ethers.utils.parseEther("0.01"),
       });
     let tokenAddress = await teleporttokenfactory.getTokenAddress(0);
     const TT = await ethers.getContractFactory("TeleportToken");
