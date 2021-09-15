@@ -19,7 +19,7 @@ module.exports = {
         },
         '41': {
             name: 'Telos',
-            tlmContract: '0x4090F0d7A0dc9BB2732FA3A0E9601Ef943b0c561',
+            tlmContract: '0x49F54c5e2301eB9256438123e80762470c2c7ec2',
             destinationChainId: 3,
             className: 'telos'
         },

@@ -4,7 +4,7 @@
 Lists all incomplete teleports from eos -> eth
  */
 
-const config_file = process.env["CONFIG"] || "./config2";
+const config_file = process.env["CONFIG"] || "./config";
 process.title = `reporter-eos ${config_file}`;
 const config = require(config_file);
 
@@ -60,12 +60,12 @@ const run = async () => {
       // console.log(res);
 
       res.rows.forEach((r) => {
-        if (r.signatures.length < 2) {
+        if (r.signatures.length < 10) {
           rows.push(r);
         }
       });
 
-      console.log("Teleports: ", rows);
+      // console.log("Teleports: ", rows);
 
 
       for (const teleport of rows) {
@@ -125,7 +125,7 @@ const run = async () => {
             },
           ];
 
-          console.log(actions);
+          // console.log(actions);
           const res = eos_api.transact(
             { actions },
             {
@@ -133,7 +133,7 @@ const run = async () => {
               expireSeconds: 180,
             }
           );
-          console.log(res);
+          // console.log(res);
         }
       }
       console.log("Done");

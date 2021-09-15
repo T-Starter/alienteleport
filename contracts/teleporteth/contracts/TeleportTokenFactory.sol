@@ -4,10 +4,10 @@ pragma solidity ^0.8.6;
  */
 pragma experimental ABIEncoderV2;
 
-// import "hardhat/console.sol";
+import "hardhat/console.sol";
 import "./TeleportToken.sol";
 
-contract TeleportTokenFactory is Owned {
+contract TeleportTokenFactory is Owned, Oracled {
     TeleportToken[] public teleporttokens;
     uint256 public creationFee = 0.01 ether;
 
@@ -63,7 +63,11 @@ contract TeleportTokenFactory is Owned {
             _threshold,
             _thisChainId
         );
-        // TODO register oracles
+
+        uint oraclesLength = oraclesArr.length;
+        for (uint i = 0; i < oraclesLength; i++) {
+            tt.regOracle(oraclesArr[i]);
+        }
         tt.transferOwnership(msg.sender);
 
         teleporttokens.push(tt);

@@ -15,7 +15,7 @@ const fetch = require('node-fetch');
 const fs = require('fs');
 const ethers = require('ethers');
 
-const config = require(process.env['CONFIG'] || './config2');
+const config = require(process.env['CONFIG'] || './config');
 
 const provider = new ethers.providers.JsonRpcProvider(config.eth.endpoint);
 
@@ -115,13 +115,18 @@ const process_claimed = async (from_block, to_block) => {
                     address: tokenAddress,
                     topics: [claimed_topic]
                 };
-                // console.log(query);
+                console.log(query);
                 const res = await provider.getLogs(query);
-                // console.log(res);
+                console.log(res);
                 if (res.length){
                     for (let r = 0; r < res.length; r++){
-                        const data = await ethers.utils.defaultAbiCoder.decode([ 'uint64', 'address', 'uint' ], res[r].data);
-    
+                        let data;
+                        if (res[r].topics[0] == claimed_topic){
+                            data = await ethers.utils.defaultAbiCoder.decode([ 'uint64', 'address', 'uint' ], res[r].data);
+                        } else {
+                            continue;
+                        }
+                        // console.log(data)
                         // console.log(res[r], data, data[1].toString());
                         const id = data[0].toNumber();
                         const to_eth = data[1].replace('0x', '') + '000000000000000000000000';
@@ -210,7 +215,12 @@ const process_teleported = async (from_block, to_block) => {
                 // console.log(res);
                 if (res.length){
                     for (let r = 0; r < res.length; r++){
-                        const data = await ethers.utils.defaultAbiCoder.decode([ 'string', 'uint', 'uint' ], res[r].data);
+                        let data;
+                        if (res[r].topics[0] == teleport_topic){
+                            data = await ethers.utils.defaultAbiCoder.decode([ 'string', 'uint', 'uint' ], res[r].data);                            
+                        } else {
+                            continue;
+                        }
 
                         // console.log(res[r], data, data[1].toString())
 

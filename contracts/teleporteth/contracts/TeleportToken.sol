@@ -173,6 +173,7 @@ contract Owned {
 
 contract Oracled is Owned {
     mapping(address => bool) public oracles;
+    address[] public oraclesArr;
 
     modifier onlyOracle {
         require(oracles[msg.sender] == true, "Account is not a registered oracle");
@@ -182,7 +183,7 @@ contract Oracled is Owned {
 
     function regOracle(address _newOracle) public onlyOwner {
         require(!oracles[_newOracle], "Oracle is already registered");
-
+        oraclesArr.push(_newOracle);
         oracles[_newOracle] = true;
     }
 

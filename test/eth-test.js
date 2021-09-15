@@ -51,11 +51,11 @@ describe("TeleportToken", function () {
     let threw = false;
     try {
       let sigData =
-        "0x3d00000000000000cf08376190d5cc5865ffbf5e40420f00000000000453544152540000032b8958a4965f7f02aeb112f656cb56d5b157ed35000000000000000000000000";
+        "0x42000000000000003055376190d5cc5865ffbf5e50690f00000000000453544152540000032b8958a4965f7f02aeb112f656cb56d5b157ed35000000000000000000000000";
       let signatures = [
-        "0x59d80914d424e53300c886cbf89a1ccfc47d6d98bc38a5a04e2b239231946f7e52157d7ac479a750402f4d62aa90998e861056db6eb293f61aea831f68b060791c",
-        "0xbd260149e2d3c1ebfbbfc90d72a4688f3f1a8114977a276bea3dcc165c4123654d280ba5f59d0dc5b2a34ef23dc3120a4fd3134e9b9e07519df6d36e711fdb151b",
-        "0x4f4895de8111a71ec3b704b08d0e70a4f7a20a2cd412016fa5802bc5ca611fdd324b2755ff962a50cb343af02fbbe44bb1e01e98b3f2edead99c7586fc7ea9851b"
+        "0x5abf0732e3e66574e28a5c5e5b478778f95ea55e46aa3f55ef674bf0cbcaefdb5cb3ce9f2a47aac8e59a3ae61a976882aeb1e5ef234b76d9019161927cf0d5861b",
+        "0x677f82e302adb33eef647f4513714b4d7faf7defe11dd783861ded215eb0b280614738f8189c9a4759111182c6f2d3c7465aad9c51c074a63ea9970f097f74421b",
+        "0x3b763a49a0807d41ae81fe5e511b6c446480de29436da9cedb8174fce02c487f3859b308117b1d1ef7fe0362cd73c5089977f70eae5b9af92deb9320a8e348661c"
       ];
       await teleporttoken.claim(sigData, signatures);
     } catch (error) {
@@ -86,6 +86,25 @@ describe("TeleportTokenFactory", function () {
     // console.log(await teleporttokenfactory.owner());
   });
 
+  it("Register oracles in Factory", async function () {
+    // register oracles
+    await teleporttokenfactory.connect(owner).regOracle("0x59023f49315113deb856106d05699a3a2dc78bb8");
+    let isOracle = await teleporttokenfactory.connect(owner).oracles(
+      "0x59023f49315113deb856106d05699a3a2dc78bb8"
+    );
+    expect(isOracle).to.be.true;
+    await teleporttokenfactory.connect(owner).regOracle("0xbc25948d1dd62a5777ab33ffe3cc0e61107043be");
+    isOracle = await teleporttokenfactory.connect(owner).oracles(
+      "0xbc25948d1dd62a5777ab33ffe3cc0e61107043be"
+    );
+    expect(isOracle).to.be.true;
+    await teleporttokenfactory.connect(owner).regOracle("0xfb18e6e108987aeb4f5f2b17a2b18790ffa8ba8b");
+    isOracle = await teleporttokenfactory.connect(owner).oracles(
+      "0xfb18e6e108987aeb4f5f2b17a2b18790ffa8ba8b"
+    );
+    expect(isOracle).to.be.true;
+  });
+
   it("Create token with fee", async function () {
     // let balance = await ethers.provider.getBalance(addr1.address);
     // console.log(balance.toString());
@@ -111,13 +130,13 @@ describe("TeleportTokenFactory", function () {
     expect(contractOwner).to.be.equal(addr1.address);
   });
 
-  it("Register oracles", async function () {
+  it("Oracles already registered", async function () {
     // register oracles
-    await newToken
-      .connect(addr1)
-      .regOracle("0x59023f49315113deb856106d05699a3a2dc78bb8", {
-        from: addr1.address,
-      });
+    // await newToken
+    //   .connect(addr1)
+    //   .regOracle("0x59023f49315113deb856106d05699a3a2dc78bb8", {
+    //     from: addr1.address,
+    //   });
     let isOracle = await newToken.oracles(
       "0x59023f49315113deb856106d05699a3a2dc78bb8"
     );
