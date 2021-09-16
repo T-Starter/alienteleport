@@ -115,9 +115,9 @@ const process_claimed = async (from_block, to_block) => {
                     address: tokenAddress,
                     topics: [claimed_topic]
                 };
-                console.log(query);
+                // console.log(query);
                 const res = await provider.getLogs(query);
-                console.log(res);
+                // console.log(res);
                 if (res.length){
                     for (let r = 0; r < res.length; r++){
                         let data;
