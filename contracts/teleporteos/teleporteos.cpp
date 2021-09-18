@@ -417,27 +417,30 @@ void teleporteos::addremote( const extended_symbol &token_symbol, const uint32_t
 }
 
 void teleporteos::m1( ) {
-    auto settings = get_settings();
-    require_auth( settings.admin_account );
+    settings2_singleton settings2_table(get_self(), get_self().value);
+    check(settings2_table.exists(), "contract not initialised");
+    auto settings2 = settings2_table.get();
 
-    settings2_singleton _settings2_table( get_self(), get_self().value );
-    bool settings2_exists = _settings2_table.exists();
-    check( !settings2_exists, "settings2 already defined" );
+    require_auth( settings2.admin_account );
 
-    _settings2_table.set(
-            settings2{
-                .admin_account = settings.admin_account,
-                .threshold = settings.threshold,
-                .enabled = settings.enabled,
-                .last_teleport_id = settings.last_teleport_id,
+    settings_singleton _settings_table( get_self(), get_self().value );
+    bool settings_exists = _settings_table.exists();
+    check( !settings_exists, "settings already defined" );
+
+    _settings_table.set(
+            settings{
+                .admin_account = settings2.admin_account,
+                .threshold = settings2.threshold,
+                .enabled = settings2.enabled,
+                .last_teleport_id = settings2.last_teleport_id,
                 .last_receipts_id = 52
                 },
                 get_self());
 }
 
 void teleporteos::m2( ) {
-    settings_singleton settings_table(get_self(), get_self().value);
-    check(settings_table.exists(), "settings not found");
-    settings_table.remove();
+    settings2_singleton settings2_table(get_self(), get_self().value);
+    check(settings2_table.exists(), "settings not found");
+    settings2_table.remove();
 }
 
