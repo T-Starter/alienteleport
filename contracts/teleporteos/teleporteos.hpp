@@ -20,6 +20,15 @@ namespace tstarter {
         };
         typedef eosio::singleton<"settings"_n, settings> settings_singleton;
 
+        struct [[eosio::table("settings2")]] settings2 {
+            name admin_account;
+            bool enabled = false;
+            uint32_t threshold = 3;
+            uint64_t last_teleport_id;
+            uint64_t last_receipts_id;
+        };
+        typedef eosio::singleton<"settings2"_n, settings2> settings2_singleton;
+
         /* supported tokens */
         struct [[eosio::table("tokens")]] tokens_item {
             extended_symbol token;
@@ -140,6 +149,9 @@ namespace tstarter {
         [[eosio::action]] void addtoken( const extended_symbol &token_symbol, const asset &min_quantity, bool enabled );
         [[eosio::action]] void updatetoken( const extended_symbol &token_symbol, const asset &min_quantity, const bool &enabled );
         [[eosio::action]] void addremote( const extended_symbol &token_symbol, const uint32_t &chain_id, const string &token_contract );
+
+        [[eosio::action]] void m1();
+        [[eosio::action]] void m2();
 
     };
 } // namespace tstarter

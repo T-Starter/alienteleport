@@ -134,7 +134,11 @@ void teleporteos::teleport(name from, asset quantity, uint8_t chain_id, checksum
     check(quantity.is_valid(), "Amount is not valid");
     check(quantity.amount > 0, "Amount cannot be negative");
     check(quantity.symbol.is_valid(), "Invalid symbol name");
-    check(quantity.amount >= 100'0000, "Transfer is below minimum of 100 START");
+
+    // FIXME - lookup from token table
+    tokens_table _tokens( get_self(), get_self().value );
+    auto token = _tokens.get( quantity.symbol.code().raw(), "token not registered on bridge" );
+    check(quantity.amount >= token.min_quantity.amount, "Transfer is below minimum of "+token.min_quantity.to_string());
 
     deposits_table _deposits(get_self(), from.value);
     auto deposit = _deposits.find(quantity.symbol.code().raw());
@@ -411,3 +415,29 @@ void teleporteos::addremote( const extended_symbol &token_symbol, const uint32_t
         s.remote_contracts[chain_id] = token_contract;
     });
 }
+
+void teleporteos::m1( ) {
+    auto settings = get_settings();
+    require_auth( settings.admin_account );
+
+    settings2_singleton _settings2_table( get_self(), get_self().value );
+    bool settings2_exists = _settings2_table.exists();
+    check( !settings2_exists, "settings2 already defined" );
+
+    _settings2_table.set(
+            settings2{
+                .admin_account = settings.admin_account,
+                .threshold = settings.threshold,
+                .enabled = settings.enabled,
+                .last_teleport_id = settings.last_teleport_id,
+                .last_receipts_id = 52
+                },
+                get_self());
+}
+
+void teleporteos::m2( ) {
+    settings_singleton settings_table(get_self(), get_self().value);
+    check(settings_table.exists(), "settings not found");
+    settings_table.remove();
+}
+
