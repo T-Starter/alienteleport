@@ -15,7 +15,7 @@ const fetch = require('node-fetch');
 const fs = require('fs');
 const ethers = require('ethers');
 
-const config = require(process.env['CONFIG'] || './config2');
+const config = require(process.env['CONFIG'] || './config');
 
 const provider = new ethers.providers.JsonRpcProvider(config.eth.endpoint);
 

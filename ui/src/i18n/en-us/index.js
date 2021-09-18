@@ -23,7 +23,7 @@ export default {
     },
     home: {
         teleport: 'Teleport',
-        transfer_between: 'Transfer between Telos and your Ethereum, Binance or Telos EVM Wallet',
+        transfer_between: 'Transfer between Telos and your Ropsten Wallet',
         to_begin: 'to begin a teleport, both accounts must be logged in',
         choose_account: 'choose which account to teleport from',
         log_in: 'Log in',
@@ -33,7 +33,8 @@ export default {
         from_wax_to: 'from Telos to <span>{networkName}</span>',
         from_to_wax: 'from <span>{networkName}</span> to Telos',
         dashboard: 'Dashboard',
-        eth_binance_login: 'ethereum <span>or</span> binance login'
+        eth_binance_login: 'ropsten login'
+        // eth_binance_login: 'ethereum <span>or</span> binance login'
     },
     dashboard: {
         new_transfer: 'New Transfer',

@@ -1213,7 +1213,7 @@ form.amount.error {
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
-  max-width: 200px;
+  // max-width: 200px;
 
   &.alienworlds {
     background-image: url("images/alienworlds-logo.svg");
@@ -1272,8 +1272,10 @@ form.amount.error {
   cursor: pointer;
 
   .logo {
-    height: 25px;
-    width: 100px;
+    // height: 25px;
+    // width: 100px;
+    height: 30px;
+    width: 140px;
     display: inline-block;
     vertical-align: top;
     margin-top: 2px;
@@ -1379,8 +1381,8 @@ form.amount.error {
   }
 
   .logo {
-    height: 50px;
-    margin: 0 auto 5%;
+    height: 130px;
+    // margin: 0 auto 5%;
   }
 
   p {
@@ -1458,11 +1460,12 @@ p.error {
 
 .logo.wax,
 #starttransfer.wax .logo {
-  background-image: url("images/alienworlds-logo-wax.svg");
+  background-image: url("images/alienworlds-logo-telos.svg");
+  // background-image: url("images/alienworlds-logo-wax.svg");
 }
 
 .wax .logo.wax {
-  width: 80%;
+  width: 65%;
 }
 
 .logo.ethereum,
