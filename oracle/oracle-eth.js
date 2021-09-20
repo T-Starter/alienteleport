@@ -73,68 +73,108 @@ const save_block = async (block_num) => {
     await fs.writeFileSync(blocks_file, block_num.toString());
 }
 
+// Gets decimal from base token asset { "sym": "4,START", "contract": "token.start" }
+const getDecimalFromAsset = function(asset) {
+    let idx = asset.sym.indexOf(",");
+    let decimal = asset.sym.slice(0, idx);
+    return decimal;
+};
+
+  // Gets symbol from base token asset { "sym": "4,START", "contract": "token.start" }
+const getSymFromAsset = function(asset) {
+    let idx = asset.sym.indexOf(",") + 1;
+    let sym = asset.sym.slice(idx);
+    return sym;
+};
+
 const process_claimed = async (from_block, to_block) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const query = {
-                fromBlock: from_block,
-                toBlock: to_block,
-                address: config.eth.teleportContract,
-                topics: [claimed_topic]
-            };
-            // console.log(query);
-            const res = await provider.getLogs(query);
-            // console.log(res);
-            if (res.length){
-                for (let r = 0; r < res.length; r++){
-                    const data = await ethers.utils.defaultAbiCoder.decode([ 'uint64', 'address', 'uint' ], res[r].data);
+            console.log("Fetching all rows from tokens table");
+            const tokensTable = await rpc.get_table_rows({
+                code: config.eos.teleportContract,
+                scope: config.eos.teleportContract,
+                table: "tokens",
+                limit: 1000,
+                reverse: true,
+            });
 
-                    // console.log(res[r], data, data[1].toString());
-                    const id = data[0].toNumber();
-                    const to_eth = data[1].replace('0x', '') + '000000000000000000000000';
-                    const quantity = (data[2].toNumber() / Math.pow(10, config.precision)).toFixed(config.precision) + ' ' + config.symbol;
-                    const actions = [];
-                    actions.push({
-                        account: config.eos.teleportContract,
-                        name: 'claimed',
-                        authorization: [{
-                            actor: config.eos.oracleAccount,
-                            permission: config.eos.oraclePermission || 'active'
-                        }],
-                        data: {
-                            oracle_name: config.eos.oracleAccount,
-                            id,
-                            to_eth,
-                            quantity
-                        }
-                    });
-                    // console.log(actions, res[r].transactionHash);
+            let tokensList = tokensTable.rows.filter(token => token.enabled == 1);
+            let tokenAddrList = [...new Set(tokensList.map(r => r.remote_contracts).flat().map(r => r.value))];
+            // console.log(tokensList);
 
-                    await_confirmation(res[r].transactionHash).then(async () => {
-                        try {
-                            const eos_res = await eos_api.transact({actions}, {
-                                blocksBehind: 3,
-                                expireSeconds: 180,
-                            });
-                            console.log(`Sent notification of claim with txid ${eos_res.transaction_id}, for ID ${id}, account 0x${to_eth.substr(0, 40)}, quantity ${quantity}`);
-                            // resolve();
+            for (const tokenAddress of tokenAddrList){
+                // find token from tokenAddress in tokensList
+                const token = tokensList.find(token => token.remote_contracts.find(remote => remote.value == tokenAddress));
+                const tokenPrecision = getDecimalFromAsset(token.token);
+                const tokenSymbol = getSymFromAsset(token.token);
+
+                const query = {
+                    fromBlock: from_block,
+                    toBlock: to_block,
+                    address: tokenAddress,
+                    topics: [claimed_topic]
+                };
+                // console.log(query);
+                const res = await provider.getLogs(query);
+                // console.log(res);
+                if (res.length){
+                    for (let r = 0; r < res.length; r++){
+                        let data;
+                        if (res[r].topics[0] == claimed_topic){
+                            data = await ethers.utils.defaultAbiCoder.decode([ 'uint64', 'address', 'uint' ], res[r].data);
+                        } else {
+                            continue;
                         }
-                        catch (e){
-                            if (e.message.indexOf('Already marked as claimed') > -1){
-                                console.log(`ID ${id} is already claimed, account 0x${to_eth.substr(0, 40)}, quantity ${quantity}`);
+                        // console.log(data)
+                        // console.log(res[r], data, data[1].toString());
+                        const id = data[0].toNumber();
+                        const to_eth = data[1].replace('0x', '') + '000000000000000000000000';
+                        const quantity = (data[2].toNumber() / Math.pow(10, tokenPrecision)).toFixed(tokenPrecision) + ' ' + tokenSymbol;
+                        const actions = [];
+                        actions.push({
+                            account: config.eos.teleportContract,
+                            name: 'claimed',
+                            authorization: [{
+                                actor: config.eos.oracleAccount,
+                                permission: config.eos.oraclePermission || 'active'
+                            }],
+                            data: {
+                                oracle_name: config.eos.oracleAccount,
+                                id,
+                                to_eth,
+                                quantity
                             }
-                            else {
-                                console.error(`Error sending confirm ${e.message}`);
-                                // reject(e);
+                        });
+                        // console.log(actions, res[r].transactionHash);
+    
+                        await_confirmation(res[r].transactionHash).then(async () => {
+                            try {
+                                const eos_res = await eos_api.transact({actions}, {
+                                    blocksBehind: 3,
+                                    expireSeconds: 180,
+                                });
+                                console.log(`Sent notification of claim with txid ${eos_res.transaction_id}, for ID ${id}, account 0x${to_eth.substr(0, 40)}, quantity ${quantity}`);
+                                // resolve();
                             }
-                        }
-                    });
-
-                    await sleep(500);
+                            catch (e){
+                                if (e.message.indexOf('Already marked as claimed') > -1){
+                                    console.log(`ID ${id} is already claimed, account 0x${to_eth.substr(0, 40)}, quantity ${quantity}`);
+                                }
+                                else {
+                                    console.error(`Error sending confirm ${e.message}`);
+                                    // reject(e);
+                                }
+                            }
+                        });
+    
+                        await sleep(500);
+                    }
                 }
+    
+                resolve();
             }
-
-            resolve();
+            
         }
         catch (e){
             reject(e);
@@ -145,77 +185,102 @@ const process_claimed = async (from_block, to_block) => {
 const process_teleported = async (from_block, to_block) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const query = {
-                fromBlock: from_block,
-                toBlock: to_block,
-                address: config.eth.teleportContract,
-                topics: [teleport_topic]
-            };
-            // console.log(query);
-            const res = await provider.getLogs(query);
-            // console.log(res);
-            if (res.length){
-                for (let r = 0; r < res.length; r++){
-                    const data = await ethers.utils.defaultAbiCoder.decode([ 'string', 'uint', 'uint' ], res[r].data);
+            console.log("Fetching all rows from tokens table");
+            const tokensTable = await rpc.get_table_rows({
+                code: config.eos.teleportContract,
+                scope: config.eos.teleportContract,
+                table: "tokens",
+                limit: 1000,
+                reverse: true,
+            });
 
-                    // console.log(res[r], data, data[1].toString())
+            let tokensList = tokensTable.rows.filter(token => token.enabled == 1);
+            let tokenAddrList = [...new Set(tokensList.map(r => r.remote_contracts).flat().map(r => r.value))];
+            // console.log(tokensList);
 
-                    const tokens = data[1].toNumber();
-                    if (tokens <= 0){
-                        // console.error(data);
-                        console.error('Tokens are less than or equal to 0');
-                        continue;
+            for (const tokenAddress of tokenAddrList){
+                // find token from tokenAddress in tokensList
+                const token = tokensList.find(token => token.remote_contracts.find(remote => remote.value == tokenAddress));
+                const tokenPrecision = getDecimalFromAsset(token.token);
+                const tokenSymbol = getSymFromAsset(token.token);
+
+                const query = {
+                    fromBlock: from_block,
+                    toBlock: to_block,
+                    address: tokenAddress,
+                    topics: [teleport_topic]
+                };
+                // console.log(query);
+                const res = await provider.getLogs(query);
+                // console.log(res);
+                if (res.length){
+                    for (let r = 0; r < res.length; r++){
+                        let data;
+                        if (res[r].topics[0] == teleport_topic){
+                            data = await ethers.utils.defaultAbiCoder.decode([ 'string', 'uint', 'uint' ], res[r].data);                            
+                        } else {
+                            continue;
+                        }
+
+                        // console.log(res[r], data, data[1].toString())
+
+                        const tokens = data[1].toNumber();
+                        if (tokens <= 0){
+                            // console.error(data);
+                            console.error('Tokens are less than or equal to 0');
+                            continue;
+                        }
+                        const to = data[0];
+                        const chain_id = data[2].toNumber();
+                        const amount = (tokens / Math.pow(10, tokenPrecision)).toFixed(tokenPrecision);
+                        const quantity = `${amount} ${tokenSymbol}`
+                        const txid = res[r].transactionHash.replace(/^0x/, '');
+
+                        const actions = [];
+                        actions.push({
+                            account: config.eos.teleportContract,
+                            name: 'received',
+                            authorization: [{
+                                actor: config.eos.oracleAccount,
+                                permission: config.eos.oraclePermission || 'active'
+                            }],
+                            data: {
+                                oracle_name: config.eos.oracleAccount,
+                                to,
+                                ref: txid,
+                                quantity,
+                                chain_id,
+                                confirmed: true
+                            }
+                        });
+                        // console.log(actions);
+
+                        await_confirmation(res[r].transactionHash).then(async () => {
+                            try {
+                                const eos_res = await eos_api.transact({actions}, {
+                                    blocksBehind: 3,
+                                    expireSeconds: 180,
+                                });
+                                console.log(`Sent notification of teleport with txid ${eos_res.transaction_id}`);
+                                // resolve();
+                            }
+                            catch (e){
+                                if (e.message.indexOf('Oracle has already approved') > -1){
+                                    console.log('Oracle has already approved');
+                                }
+                                else {
+                                    console.error(`Error sending teleport ${e.message}`);
+                                    // reject(e);
+                                }
+                            }
+                        });
+
+                        await sleep(500);
                     }
-                    const to = data[0];
-                    const chain_id = data[2].toNumber();
-                    const amount = (tokens / Math.pow(10, config.precision)).toFixed(config.precision);
-                    const quantity = `${amount} ${config.symbol}`
-                    const txid = res[r].transactionHash.replace(/^0x/, '');
-
-                    const actions = [];
-                    actions.push({
-                        account: config.eos.teleportContract,
-                        name: 'received',
-                        authorization: [{
-                            actor: config.eos.oracleAccount,
-                            permission: config.eos.oraclePermission || 'active'
-                        }],
-                        data: {
-                            oracle_name: config.eos.oracleAccount,
-                            to,
-                            ref: txid,
-                            quantity,
-                            chain_id,
-                            confirmed: true
-                        }
-                    });
-                    // console.log(actions);
-
-                    await_confirmation(res[r].transactionHash).then(async () => {
-                        try {
-                            const eos_res = await eos_api.transact({actions}, {
-                                blocksBehind: 3,
-                                expireSeconds: 180,
-                            });
-                            console.log(`Sent notification of teleport with txid ${eos_res.transaction_id}`);
-                            // resolve();
-                        }
-                        catch (e){
-                            if (e.message.indexOf('Oracle has already approved') > -1){
-                                console.log('Oracle has already approved');
-                            }
-                            else {
-                                console.error(`Error sending teleport ${e.message}`);
-                                // reject(e);
-                            }
-                        }
-                    });
-
-                    await sleep(500);
                 }
-            }
 
-            resolve();
+                resolve();
+            }
         }
         catch (e){
             reject(e);

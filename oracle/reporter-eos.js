@@ -60,12 +60,12 @@ const run = async () => {
       // console.log(res);
 
       res.rows.forEach((r) => {
-        if (r.signatures.length < 1) {
+        if (r.signatures.length < 10) {
           rows.push(r);
         }
       });
 
-      console.log("Teleports: ", rows);
+      // console.log("Teleports: ", rows);
 
 
       for (const teleport of rows) {
@@ -97,7 +97,7 @@ const run = async () => {
 
           const data_buf = Buffer.from(sb.array.slice(0, 69));
           const msg_hash = ethUtil.keccak(data_buf);
-          // console.log(msg_hash.toString("hex"));
+          console.log(msg_hash.toString("hex"));
           // console.log(config.eth.privateKey);
           const pk = Buffer.from(config.eth.privateKey, "hex");
           const sig = ethUtil.ecsign(msg_hash, pk);
@@ -125,7 +125,7 @@ const run = async () => {
             },
           ];
 
-          console.log(actions);
+          // console.log(actions);
           const res = eos_api.transact(
             { actions },
             {
@@ -133,7 +133,7 @@ const run = async () => {
               expireSeconds: 180,
             }
           );
-          console.log(res);
+          // console.log(res);
         }
       }
       console.log("Done");

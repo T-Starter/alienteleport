@@ -1,10 +1,10 @@
-pragma solidity ^0.6.12;
+pragma solidity ^0.8.6;
 /*
  * SPDX-License-Identifier: MIT
  */
 pragma experimental ABIEncoderV2;
 
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
 
 
 contract Verify {
@@ -149,7 +149,7 @@ contract Owned {
 
     event OwnershipTransferred(address indexed _from, address indexed _to);
 
-    constructor() public {
+    constructor() {
         owner = msg.sender;
     }
 
@@ -173,6 +173,7 @@ contract Owned {
 
 contract Oracled is Owned {
     mapping(address => bool) public oracles;
+    address[] public oraclesArr;
 
     modifier onlyOracle {
         require(oracles[msg.sender] == true, "Account is not a registered oracle");
@@ -182,7 +183,7 @@ contract Oracled is Owned {
 
     function regOracle(address _newOracle) public onlyOwner {
         require(!oracles[_newOracle], "Oracle is already registered");
-
+        oraclesArr.push(_newOracle);
         oracles[_newOracle] = true;
     }
 
@@ -229,14 +230,14 @@ contract TeleportToken is ERC20Interface, Owned, Oracled, Verify {
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
-    constructor() public {
-        symbol = "START";
-        name = "T-Starter START";
-        decimals = 4;
-        _totalSupply = 100000000 * 10**uint(decimals);
+    constructor(string memory _symbol, string memory _name, uint8 _decimals, uint __totalSupply, uint8 _threshold, uint8 _thisChainId) {
+        symbol = _symbol;
+        name = _name;
+        decimals = _decimals;
+        _totalSupply = __totalSupply * 10**uint(_decimals);
         balances[address(0)] = _totalSupply;
-        threshold = 3;
-        thisChainId = 1;
+        threshold = _threshold;
+        thisChainId = _thisChainId;
     }
 
 
@@ -342,6 +343,10 @@ contract TeleportToken is ERC20Interface, Owned, Oracled, Verify {
         return true;
     }
 
+    // ------------------------------------------------------------------------
+    // Claim tokens sent using signatures supplied to the other chain
+    // ------------------------------------------------------------------------
+
     function stringToBytes32(string memory source) public pure returns (bytes32 result) {
         bytes memory tempEmptyStringTest = bytes(source);
         if (tempEmptyStringTest.length == 0) {
@@ -352,11 +357,6 @@ contract TeleportToken is ERC20Interface, Owned, Oracled, Verify {
             result := mload(add(source, 32))
         }
     }
-
-    // ------------------------------------------------------------------------
-    // Claim tokens sent using signatures supplied to the other chain
-    // ------------------------------------------------------------------------
-
 
     function verifySigData(bytes memory sigData) private returns (TeleportData memory) {
         TeleportData memory td;
@@ -388,7 +388,7 @@ contract TeleportToken is ERC20Interface, Owned, Oracled, Verify {
         td.toAddress = toAddress;
 
         requiredSymbolRaw = uint64(bytes8(stringToBytes32(TeleportToken.symbol)));
-        require(requiredSymbolRaw == symbolRaw-1, "Wrong symbol");
+        require(requiredSymbolRaw == symbolRaw-td.chainId, "Wrong symbol");
         require(thisChainId == td.chainId, "Invalid Chain ID");
         require(block.timestamp < SafeMath.add(td.ts, (60 * 60 * 24 * 30)), "Teleport has expired");
         require(!claimed[td.id], "Already Claimed");
@@ -412,6 +412,9 @@ contract TeleportToken is ERC20Interface, Owned, Oracled, Verify {
         for (uint8 i = 0; i < signatures.length; i++){
             address potential = Verify.recoverSigner(message, signatures[i]);
 
+            // console.log(potential);
+            // console.log(oracles[potential]);
+            // console.log(!signed[td.id][potential]);
             // Check that they are an oracle and they haven't signed twice
             if (oracles[potential] && !signed[td.id][potential]){
                 signed[td.id][potential] = true;

@@ -135,7 +135,7 @@ void teleporteos::teleport(name from, asset quantity, uint8_t chain_id, checksum
     check(quantity.amount > 0, "Amount cannot be negative");
     check(quantity.symbol.is_valid(), "Invalid symbol name");
 
-    // FIXME - lookup from token table
+    // lookup from token table
     tokens_table _tokens( get_self(), get_self().value );
     auto token = _tokens.get( quantity.symbol.code().raw(), "token not registered on bridge" );
     check(quantity.amount >= token.min_quantity.amount, "Transfer is below minimum of "+token.min_quantity.to_string());
