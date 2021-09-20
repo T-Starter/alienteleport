@@ -230,7 +230,9 @@ void teleporteos::sign(name oracle_name, uint64_t id, string signature) {
 }
 
 void teleporteos::received(name oracle_name, name to, checksum256 ref, asset quantity, uint8_t chain_id, bool confirmed) {
-    auto settings = get_settings();
+    settings_singleton settings_table(get_self(), get_self().value);
+    check(settings_table.exists(), "contract not initialised");
+    auto settings = settings_table.get();
 
     require_oracle(oracle_name);
 
@@ -247,8 +249,12 @@ void teleporteos::received(name oracle_name, name to, checksum256 ref, asset qua
         check( token != _tokens.end(), "token not found");
         auto token_contract = token->token.get_contract();
 
+        settings.last_receipts_id += 1;
+        uint64_t next_receipts_id = settings.last_receipts_id;
+        settings_table.set(settings, get_self());
+
         _receipts.emplace(get_self(), [&](auto &r){
-            r.id = _receipts.available_primary_key();
+            r.id = next_receipts_id;
             r.date = current_time_point();
             r.ref = ref;
             r.chain_id = chain_id;
@@ -402,6 +408,18 @@ void teleporteos::updatetoken( const extended_symbol &token_symbol, const asset 
     });
 }
 
+void teleporteos::removetoken( const extended_symbol &token_symbol ) {
+    auto settings = get_settings();
+    require_auth( settings.admin_account );
+
+    // find token entry
+    tokens_table _tokens( get_self(), get_self().value );
+    auto token = _tokens.find( token_symbol.get_symbol().code().raw() );
+    check( token != _tokens.end(), "token not found");
+
+    _tokens.erase(token);
+}
+
 void teleporteos::addremote( const extended_symbol &token_symbol, const uint32_t &chain_id, const string &token_contract ) {
     auto settings = get_settings();
     require_auth( settings.admin_account );
@@ -415,32 +433,3 @@ void teleporteos::addremote( const extended_symbol &token_symbol, const uint32_t
         s.remote_contracts[chain_id] = token_contract;
     });
 }
-
-void teleporteos::m1( ) {
-    settings2_singleton settings2_table(get_self(), get_self().value);
-    check(settings2_table.exists(), "contract not initialised");
-    auto settings2 = settings2_table.get();
-
-    require_auth( settings2.admin_account );
-
-    settings_singleton _settings_table( get_self(), get_self().value );
-    bool settings_exists = _settings_table.exists();
-    check( !settings_exists, "settings already defined" );
-
-    _settings_table.set(
-            settings{
-                .admin_account = settings2.admin_account,
-                .threshold = settings2.threshold,
-                .enabled = settings2.enabled,
-                .last_teleport_id = settings2.last_teleport_id,
-                .last_receipts_id = 52
-                },
-                get_self());
-}
-
-void teleporteos::m2( ) {
-    settings2_singleton settings2_table(get_self(), get_self().value);
-    check(settings2_table.exists(), "settings not found");
-    settings2_table.remove();
-}
-
