@@ -25,6 +25,7 @@ namespace tstarter {
         struct [[eosio::table("tokens")]] tokens_item {
             extended_symbol token;
             asset min_quantity;
+            bool claim_by_user;
             bool enabled;
             map <uint32_t, string> remote_contracts;
 

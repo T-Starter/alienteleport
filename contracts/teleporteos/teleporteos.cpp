@@ -389,6 +389,7 @@ void teleporteos::addtoken( const extended_symbol &token_symbol, const asset &mi
     _tokens.emplace( get_self(), [&]( auto& row ) {
         row.token = token_symbol;
         row.min_quantity = min_quantity;
+        row.claim_by_user = true;
         row.enabled = enabled;
     });
 }

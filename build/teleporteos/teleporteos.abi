@@ -428,6 +428,10 @@
                     "type": "asset"
                 },
                 {
+                    "name": "claim_by_user",
+                    "type": "bool"
+                },
+                {
                     "name": "enabled",
                     "type": "bool"
                 },
