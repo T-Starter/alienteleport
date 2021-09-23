@@ -284,6 +284,16 @@
             ]
         },
         {
+            "name": "removetoken",
+            "base": "",
+            "fields": [
+                {
+                    "name": "token_symbol",
+                    "type": "extended_symbol"
+                }
+            ]
+        },
+        {
             "name": "setthreshold",
             "base": "",
             "fields": [
@@ -311,6 +321,10 @@
                 },
                 {
                     "name": "last_teleport_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "last_receipts_id",
                     "type": "uint64"
                 }
             ]
@@ -412,6 +426,10 @@
                 {
                     "name": "min_quantity",
                     "type": "asset"
+                },
+                {
+                    "name": "claim_by_user",
+                    "type": "bool"
                 },
                 {
                     "name": "enabled",
@@ -525,6 +543,11 @@
         {
             "name": "regoracle",
             "type": "regoracle",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "removetoken",
+            "type": "removetoken",
             "ricardian_contract": ""
         },
         {

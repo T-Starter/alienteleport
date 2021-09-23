@@ -134,7 +134,11 @@ void teleporteos::teleport(name from, asset quantity, uint8_t chain_id, checksum
     check(quantity.is_valid(), "Amount is not valid");
     check(quantity.amount > 0, "Amount cannot be negative");
     check(quantity.symbol.is_valid(), "Invalid symbol name");
-    check(quantity.amount >= 100'0000, "Transfer is below minimum of 100 START"); // TODO get minimum from table
+
+    // lookup from token table
+    tokens_table _tokens( get_self(), get_self().value );
+    auto token = _tokens.get( quantity.symbol.code().raw(), "token not registered on bridge" );
+    check(quantity.amount >= token.min_quantity.amount, "Transfer is below minimum of "+token.min_quantity.to_string());
 
     deposits_table _deposits(get_self(), from.value);
     auto deposit = _deposits.find(quantity.symbol.code().raw());
@@ -226,7 +230,9 @@ void teleporteos::sign(name oracle_name, uint64_t id, string signature) {
 }
 
 void teleporteos::received(name oracle_name, name to, checksum256 ref, asset quantity, uint8_t chain_id, bool confirmed) {
-    auto settings = get_settings();
+    settings_singleton settings_table(get_self(), get_self().value);
+    check(settings_table.exists(), "contract not initialised");
+    auto settings = settings_table.get();
 
     require_oracle(oracle_name);
 
@@ -243,8 +249,12 @@ void teleporteos::received(name oracle_name, name to, checksum256 ref, asset qua
         check( token != _tokens.end(), "token not found");
         auto token_contract = token->token.get_contract();
 
+        settings.last_receipts_id += 1;
+        uint64_t next_receipts_id = settings.last_receipts_id;
+        settings_table.set(settings, get_self());
+
         _receipts.emplace(get_self(), [&](auto &r){
-            r.id = _receipts.available_primary_key();
+            r.id = next_receipts_id;
             r.date = current_time_point();
             r.ref = ref;
             r.chain_id = chain_id;
@@ -379,6 +389,7 @@ void teleporteos::addtoken( const extended_symbol &token_symbol, const asset &mi
     _tokens.emplace( get_self(), [&]( auto& row ) {
         row.token = token_symbol;
         row.min_quantity = min_quantity;
+        row.claim_by_user = true;
         row.enabled = enabled;
     });
 }
@@ -396,6 +407,18 @@ void teleporteos::updatetoken( const extended_symbol &token_symbol, const asset 
         s.enabled = enabled;
         s.min_quantity = min_quantity;
     });
+}
+
+void teleporteos::removetoken( const extended_symbol &token_symbol ) {
+    auto settings = get_settings();
+    require_auth( settings.admin_account );
+
+    // find token entry
+    tokens_table _tokens( get_self(), get_self().value );
+    auto token = _tokens.find( token_symbol.get_symbol().code().raw() );
+    check( token != _tokens.end(), "token not found");
+
+    _tokens.erase(token);
 }
 
 void teleporteos::addremote( const extended_symbol &token_symbol, const uint32_t &chain_id, const string &token_contract ) {
