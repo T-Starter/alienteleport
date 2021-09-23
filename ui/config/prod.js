@@ -2,7 +2,8 @@ module.exports = {
     telosEndpoint: 'https://testnet.telos.africa',
     telosChainId: '1eaa0824707c8c16bd25145493bf062aecddfeb56c736f6ba6397f3195f33c9f',
     tlmContract: 'token.start',
-    teleportContract: 'evm.start',
+    // teleportContract: 'evm.start',
+    teleportContract: 'tport.start',
     ipfsRoot: 'https://ipfs.io/ipfs/',
     networks: {
         '3': {

@@ -103,8 +103,9 @@
                             <div class="loginwrap eth-bsc">
                                 <p v-if="unsupportedChain" class="error">This chain is not supported, please select Ethereum Mainnet or Binance Smart Chain in Metamask</p>
                                 <div class="logowrap" v-if="!unsupportedChain">
-                                    <div class="logo ethereum" v-if="getChainId.ethereum == 1 || !getAccountName.ethereum"></div>
-                                    <div class="logo binance" v-if="getChainId.ethereum != 1 || !getAccountName.ethereum"></div>
+                                    <!-- <div class="logo ethereum" v-if="getChainId.ethereum == 1 || !getAccountName.ethereum"></div>
+                                    <div class="logo binance" v-if="getChainId.ethereum != 1 || !getAccountName.ethereum"></div> -->
+                                    <div class="logo binance"  v-if="getChainId.ethereum != 1 || !getAccountName.ethereum"></div>
                                 </div>
                                 <div class="enter active" v-if="!getAccountName.ethereum">
                                     <a class="button" @click="login('ethereum')">{{$t('home.log_in')}}</a>
@@ -188,9 +189,9 @@
                     </div>
 
                     <!-- -------------------Announce bar------------------- -->
-                    <div class="announcebar">
+                    <!-- <div class="announcebar">
                       BSC to WAX Teleports are experiencing longer than usual travel times. Please do not Teleport time-sensitive transfers. <a href="https://alienworlds.zendesk.com/hc/en-us/articles/1500012591482-Delays-in-BSC-to-WAX-Teleport" target="_blank">Known Issue can be found here.</a>
-                    </div>
+                    </div> -->
                 </div>
             </div>
 
