@@ -1,67 +1,77 @@
 version: '3'
 services:
-  teleport-reporter1-eos:
+  teleport-reporter1-telos-testnet:
     command: "node reporter-eos.js"
     build:
       context: .
     image: "teleport-reporter:v1"
-    container_name: teleport-reporter1-eos
+    container_name: teleport-reporter1-telos-testnet
     volumes:
       - ./oracle/config/config1.js:/home/node/app/reporter/config.js
-  teleport-reporter2-eos:
+  teleport-reporter2-telos-testnet:
     command: "node reporter-eos.js"
     build:
       context: .
     image: "teleport-reporter:v1"
-    container_name: teleport-reporter2-eos
+    container_name: teleport-reporter2-telos-testnet
     volumes:
       - ./oracle/config/config2.js:/home/node/app/reporter/config.js
-  teleport-reporter3-eos:
+  teleport-reporter3-telos-testnet:
     command: "node reporter-eos.js"
     build:
       context: .
     image: "teleport-reporter:v1"
-    container_name: teleport-reporter3-eos
+    container_name: teleport-reporter3-telos-testnet
     volumes:
       - ./oracle/config/config3.js:/home/node/app/reporter/config.js
-  teleport-reporter1-eth:
-    command: "node oracle-eth.js"
+  teleport-reporter1-eth-testnet:
+    command: "node reporter-eth.js"
     build:
       context: .
     image: "teleport-reporter:v1"
-    container_name: teleport-reporter1-eth
+    container_name: teleport-reporter1-eth-testnet
     volumes:
       - ./oracle/config/config1.js:/home/node/app/reporter/config.js
-  teleport-reporter2-eth:
-    command: "node oracle-eth.js"
+  teleport-reporter2-eth-testnet:
+    command: "node reporter-eth.js"
     build:
       context: .
     image: "teleport-reporter:v1"
-    container_name: teleport-reporter2-eth
+    container_name: teleport-reporter2-eth-testnet
     volumes:
       - ./oracle/config/config2.js:/home/node/app/reporter/config.js
-  teleport-reporter3-eth:
-    command: "node oracle-eth.js"
+  teleport-reporter3-eth-testnet:
+    command: "node reporter-eth.js"
     build:
       context: .
     image: "teleport-reporter:v1"
-    container_name: teleport-reporter3-eth
+    container_name: teleport-reporter3-eth-testnet
     volumes:
       - ./oracle/config/config3.js:/home/node/app/reporter/config.js
-  teleport-reporter1-tevm:
-    command: "node oracle-eth.js"
+  teleport-reporter1-bsc-testnet:
+    command: "node reporter-bsc.js"
     build:
       context: .
     image: "teleport-reporter:v1"
-    container_name: teleport-reporter1-tevm
-    volumes:
-      - ./oracle/config/tevm-config1.js:/home/node/app/reporter/config.js
-  teleport-reporter1-bsct:
-    command: "node oracle-eth.js"
-    build:
-      context: .
-    image: "teleport-reporter:v1"
-    container_name: teleport-reporter1-bsct
+    container_name: teleport-reporter1-bsc-testnet
     volumes:
       - ./oracle/config/bsct-config1.js:/home/node/app/reporter/config.js
+  teleport-reporter2-bsc-testnet:
+    command: "node reporter-bsc.js"
+    build:
+      context: .
+    image: "teleport-reporter:v1"
+    container_name: teleport-reporter2-bsc-testnet
+    volumes:
+      - ./oracle/config/bsct-config2.js:/home/node/app/reporter/config.js
+
+  teleport-reporter3-bsc-testnet:
+    command: "node reporter-bsc.js"
+    build:
+      context: .
+    image: "teleport-reporter:v1"
+    container_name: teleport-reporter3-bsc-testnet
+    volumes:
+      - ./oracle/config/bsct-config3.js:/home/node/app/reporter/config.js
+
 

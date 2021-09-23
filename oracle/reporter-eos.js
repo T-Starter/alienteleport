@@ -53,14 +53,14 @@ const run = async () => {
         code: config.eos.teleportContract,
         scope: config.eos.teleportContract,
         table: "teleports",
-        limit: 1000,
+        limit: 25,
         reverse: true,
       });
 
       // console.log(res);
 
       res.rows.forEach((r) => {
-        if (r.signatures.length < 10) {
+        if (r.signatures.length < 100) {
           rows.push(r);
         }
       });
