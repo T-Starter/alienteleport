@@ -231,7 +231,7 @@ const process_teleported = async (from_block, to_block) => {
                             continue;
                         }
                         const to = data[0];
-                        const from_chain_id = 1;
+                        const from_chain_id = config.chainId;
                         const to_chain_id = data[2].toNumber();
                         const amount = (tokens / Math.pow(10, tokenPrecision)).toFixed(tokenPrecision);
                         const quantity = `${amount} ${tokenSymbol}`
