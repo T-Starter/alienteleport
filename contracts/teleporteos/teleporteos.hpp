@@ -28,6 +28,8 @@ namespace tstarter {
             bool claim_by_user;
             bool enabled;
             map <uint32_t, string> remote_contracts;
+            map <uint32_t, asset> pending;
+            map <uint32_t, asset> locked;
 
             uint64_t primary_key() const { return token.get_symbol().code().raw(); }
         };
@@ -131,7 +133,7 @@ namespace tstarter {
         [[eosio::action]] void sign(name oracle_name, uint64_t id, string signature);
         [[eosio::action]] void withdraw(name from, asset quantity);
         [[eosio::action]] void cancel(uint64_t id);
-        [[eosio::action]] void received(name oracle_name, name to, checksum256 ref, asset quantity, uint8_t chain_id, bool confirmed);
+        [[eosio::action]] void received(name oracle_name, name to, checksum256 ref, asset quantity, uint8_t from_chain_id, uint8_t to_chain_id, bool confirmed);
         [[eosio::action]] void claimed(name oracle_name, uint64_t id, checksum256 to_eth, asset quantity);
         [[eosio::action]] void regoracle(name oracle_name);
         [[eosio::action]] void unregoracle(name oracle_name);
@@ -143,6 +145,13 @@ namespace tstarter {
         [[eosio::action]] void updatetoken( const extended_symbol &token_symbol, const asset &min_quantity, const bool &enabled );
         [[eosio::action]] void removetoken( const extended_symbol &token_symbol );
         [[eosio::action]] void addremote( const extended_symbol &token_symbol, const uint32_t &chain_id, const string &token_contract );
+
+        [[eosio::action]] void setpending( const uint32_t &chain_id, const asset &quantity );
+        [[eosio::action]] void setlocked( const uint32_t &chain_id, const asset &quantity );
+
+        void addpending( const uint32_t &chain_id, const extended_asset &quantity );
+        void addlocked( const uint32_t &chain_id, const asset &quantity );
+        void sublocked( const uint32_t &chain_id, const asset &quantity );
 
     };
 } // namespace tstarter

@@ -184,6 +184,20 @@
             ]
         },
         {
+            "name": "pair_uint32_asset",
+            "base": "",
+            "fields": [
+                {
+                    "name": "key",
+                    "type": "uint32"
+                },
+                {
+                    "name": "value",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
             "name": "pair_uint32_string",
             "base": "",
             "fields": [
@@ -264,7 +278,11 @@
                     "type": "asset"
                 },
                 {
-                    "name": "chain_id",
+                    "name": "from_chain_id",
+                    "type": "uint8"
+                },
+                {
+                    "name": "to_chain_id",
                     "type": "uint8"
                 },
                 {
@@ -290,6 +308,34 @@
                 {
                     "name": "token_symbol",
                     "type": "extended_symbol"
+                }
+            ]
+        },
+        {
+            "name": "setlocked",
+            "base": "",
+            "fields": [
+                {
+                    "name": "chain_id",
+                    "type": "uint32"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "setpending",
+            "base": "",
+            "fields": [
+                {
+                    "name": "chain_id",
+                    "type": "uint32"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
                 }
             ]
         },
@@ -438,6 +484,14 @@
                 {
                     "name": "remote_contracts",
                     "type": "pair_uint32_string[]"
+                },
+                {
+                    "name": "pending",
+                    "type": "pair_uint32_asset[]"
+                },
+                {
+                    "name": "locked",
+                    "type": "pair_uint32_asset[]"
                 }
             ]
         },
@@ -548,6 +602,16 @@
         {
             "name": "removetoken",
             "type": "removetoken",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "setlocked",
+            "type": "setlocked",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "setpending",
+            "type": "setpending",
             "ricardian_contract": ""
         },
         {

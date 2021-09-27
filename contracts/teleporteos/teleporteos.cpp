@@ -171,6 +171,8 @@ void teleporteos::teleport(name from, asset quantity, uint8_t chain_id, checksum
         t.claimed = false;
     });
 
+    addpending( chain_id, {quantity,token_contract} );
+
     action(
         permission_level{get_self(), "active"_n},
         get_self(), "logteleport"_n,
@@ -229,7 +231,7 @@ void teleporteos::sign(name oracle_name, uint64_t id, string signature) {
     });
 }
 
-void teleporteos::received(name oracle_name, name to, checksum256 ref, asset quantity, uint8_t chain_id, bool confirmed) {
+void teleporteos::received(name oracle_name, name to, checksum256 ref, asset quantity, uint8_t from_chain_id, uint8_t to_chain_id, bool confirmed) {
     settings_singleton settings_table(get_self(), get_self().value);
     check(settings_table.exists(), "contract not initialised");
     auto settings = settings_table.get();
@@ -257,7 +259,7 @@ void teleporteos::received(name oracle_name, name to, checksum256 ref, asset qua
             r.id = next_receipts_id;
             r.date = current_time_point();
             r.ref = ref;
-            r.chain_id = chain_id;
+            r.chain_id = to_chain_id;
             r.to = to;
             r.token_contract = token_contract;
             r.quantity = quantity;
@@ -290,6 +292,9 @@ void teleporteos::received(name oracle_name, name to, checksum256 ref, asset qua
                 ).send();
 
                 completed = true;
+
+                // TODO Make chain_id dynamic
+                sublocked( from_chain_id, quantity );
             }
 
             _receipts.modify(*receipt, get_self(), [&](auto &r){
@@ -320,6 +325,8 @@ void teleporteos::claimed(name oracle_name, uint64_t id, checksum256 to_eth, ass
     _teleports.modify(*teleport, same_payer, [&](auto &t){
         t.claimed = true;
     });
+
+    addlocked( teleport->chain_id, quantity );
 }
 
 void teleporteos::regoracle(name oracle_name) {
@@ -432,5 +439,70 @@ void teleporteos::addremote( const extended_symbol &token_symbol, const uint32_t
 
     _tokens.modify(token, get_self(), [&](auto &s) {
         s.remote_contracts[chain_id] = token_contract;
+    });
+}
+
+void teleporteos::addpending( const uint32_t &chain_id, const extended_asset &quantity ) {
+
+    auto token_contract = quantity.contract;
+    auto token = quantity.quantity;
+
+    // find token entry
+    tokens_table _tokens( get_self(), get_self().value );
+    auto token_itt = _tokens.find( token.symbol.code().raw() );
+    check( token_itt != _tokens.end(), "token not found");
+
+    _tokens.modify(token_itt, get_self(), [&](auto &s) {
+        s.pending[chain_id] = ( s.pending.find( chain_id ) == s.pending.end()) ? token : s.pending[chain_id] + token;
+    });
+}
+
+void teleporteos::addlocked( const uint32_t &chain_id, const asset &quantity ) {
+
+    tokens_table _tokens( get_self(), get_self().value );
+    auto token_itt = _tokens.find( quantity.symbol.code().raw() );
+    check( token_itt != _tokens.end(), "token not found");
+
+    _tokens.modify(token_itt, get_self(), [&](auto &s) {
+        s.pending[chain_id] -= quantity;
+        s.locked[chain_id] = ( s.locked.find( chain_id ) == s.locked.end()) ? quantity : s.locked[chain_id] + quantity;
+    });
+}
+
+void teleporteos::sublocked( const uint32_t &chain_id, const asset &quantity ) {
+
+    tokens_table _tokens( get_self(), get_self().value );
+    auto token_itt = _tokens.find( quantity.symbol.code().raw() );
+    check( token_itt != _tokens.end(), "token not found");
+
+    _tokens.modify(token_itt, get_self(), [&](auto &s) {
+        s.locked[chain_id] -= quantity;
+    });
+}
+
+// FIXME just here to update locked to account for transactions before counters added
+void teleporteos::setpending( const uint32_t &chain_id, const asset &quantity ) {
+    auto settings = get_settings();
+    require_auth( settings.admin_account );
+
+    tokens_table _tokens( get_self(), get_self().value );
+    auto token_itt = _tokens.find( quantity.symbol.code().raw() );
+    check( token_itt != _tokens.end(), "token not found");
+
+    _tokens.modify(token_itt, get_self(), [&](auto &s) {
+        s.pending[chain_id] = quantity;
+    });
+}
+
+void teleporteos::setlocked( const uint32_t &chain_id, const asset &quantity ) {
+    auto settings = get_settings();
+    require_auth( settings.admin_account );
+
+    tokens_table _tokens( get_self(), get_self().value );
+    auto token_itt = _tokens.find( quantity.symbol.code().raw() );
+    check( token_itt != _tokens.end(), "token not found");
+
+    _tokens.modify(token_itt, get_self(), [&](auto &s) {
+        s.locked[chain_id] = quantity;
     });
 }
