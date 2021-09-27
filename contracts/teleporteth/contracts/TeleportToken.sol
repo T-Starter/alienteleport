@@ -420,7 +420,7 @@ contract TeleportToken is ERC20Interface, Owned, Oracled, Verify {
                 signed[td.id][potential] = true;
                 numberSigs++;
 
-                if (numberSigs >= 10){
+                if (numberSigs >= threshold){
                     break;
                 }
             }
