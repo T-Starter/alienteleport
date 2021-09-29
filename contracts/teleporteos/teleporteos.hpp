@@ -88,7 +88,8 @@ namespace tstarter {
           time_point_sec date;
           checksum256    ref;
           name           to;
-          uint8_t        chain_id;
+          uint8_t        from_chain_id;
+          uint8_t        to_chain_id;
           uint8_t        confirmations;
           name           token_contract;
           asset          quantity;

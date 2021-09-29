@@ -232,7 +232,11 @@
                     "type": "name"
                 },
                 {
-                    "name": "chain_id",
+                    "name": "from_chain_id",
+                    "type": "uint8"
+                },
+                {
+                    "name": "to_chain_id",
                     "type": "uint8"
                 },
                 {

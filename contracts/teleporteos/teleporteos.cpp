@@ -259,7 +259,8 @@ void teleporteos::received(name oracle_name, name to, checksum256 ref, asset qua
             r.id = next_receipts_id;
             r.date = current_time_point();
             r.ref = ref;
-            r.chain_id = to_chain_id;
+            r.from_chain_id = from_chain_id;
+            r.to_chain_id = to_chain_id;
             r.to = to;
             r.token_contract = token_contract;
             r.quantity = quantity;
