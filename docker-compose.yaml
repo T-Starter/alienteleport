@@ -26,6 +26,32 @@ services:
     volumes:
       - ./oracle/config/bsc-config3.js:/home/node/app/reporter/config.js
 
+  # Ethereum mainnet
+  teleport-reporter1-eth:
+    command: "node reporter-eth.js"
+    build:
+      context: .
+    image: "teleport-reporter:v1"
+    container_name: teleport-reporter1-eth
+    volumes:
+      - ./oracle/config/eth-config1.js:/home/node/app/reporter/config.js
+  teleport-reporter2-eth:
+    command: "node reporter-eth.js"
+    build:
+      context: .
+    image: "teleport-reporter:v1"
+    container_name: teleport-reporter2-eth
+    volumes:
+      - ./oracle/config/eth-config2.js:/home/node/app/reporter/config.js
+  teleport-reporter3-eth:
+    command: "node reporter-eth.js"
+    build:
+      context: .
+    image: "teleport-reporter:v1"
+    container_name: teleport-reporter3-eth
+    volumes:
+      - ./oracle/config/eth-config3.js:/home/node/app/reporter/config.js
+
   # BSC mainnet
   teleport-reporter1-bsc:
     command: "node reporter-eth.js"
