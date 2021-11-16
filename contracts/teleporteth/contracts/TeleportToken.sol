@@ -5,7 +5,8 @@ pragma solidity ^0.8.6;
 pragma experimental ABIEncoderV2;
 
 // import "hardhat/console.sol";
-
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 contract Verify {
 
@@ -118,6 +119,7 @@ library SafeMath {
 // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
 // ----------------------------------------------------------------------------
 abstract contract ERC20Interface {
+    using SafeERC20 for IERC20;
     function totalSupply() virtual public view returns (uint);
     function balanceOf(address tokenOwner) virtual public view returns (uint balance);
     function allowance(address tokenOwner, address spender) virtual public view returns (uint remaining);
