@@ -7,3 +7,5 @@ cache
 artifacts
 .oracle*
 oracle/node_modules
+config.json
+build

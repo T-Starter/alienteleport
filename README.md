@@ -7,6 +7,41 @@ Contracts and tools to create a bridge between WAX tokens and an ERC-20 counterp
 There are contracts available for both EOSIO chains and Ethereum, both should be deployed 
 on their respective chains.
 
+### Deployment guide
+After cloning the repository, first install the dependencies:
+
+```
+❍ npm i
+```
+
+Next, you need to fill in the the following information in the __`config.json`__
+
+Finally, deploy the vault to your chose network via the command:
+
+```
+❍ npx truffle migrate --network <network> --reset
+```
+
+Currently, there exists in the __`./truffle-config.js`__ configurations for the following __`<network>s`__
+
+```
+xDai
+rinkeby
+ropsten
+ethMainnet
+bscMainnet
+bscTestnet
+polygonMaticMainnet
+```
+
+Should you need to deploy to a different chain, inspect the existing configurations and make your own with values pertinent to that new chain.
+
+Finally, to verify the deployed contract run:
+
+```
+❍ npx truffle run verify TeleportTokenFactory --network <network>
+```
+
 ## Process
 
 Transferring from EOSIO -> ETH requires depositing the tokens to the EOSIO contract with a standard transfer (no memo required), 

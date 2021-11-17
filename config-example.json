@@ -1,0 +1,7 @@
+{
+  "GAS_PRICE": 10e9,
+  "ETHERSCAN_API_KEY": "51M7KKS9R5CZ2KRPHM1IA87P2W9UP5PGHQ",
+  "WETH_ADDRESS": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+  "PRIVATE_KEY": "2b18efff601d68188bf41da2f57a90c5f0250d4ebfbee5d13f262f0ef84c842a",
+  "ENDPOINT": "https://aged-blue-field.rinkeby.quiknode.pro/4ebfbee5d13f262f0ef84c842f/",
+}
