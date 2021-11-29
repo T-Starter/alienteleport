@@ -329,7 +329,11 @@ const run = async (from_block = 'latest') => {
 
             if (latest_block - from_block <= 1000){
                 console.log('Waiting...');
-                await sleep(30000);
+                if (config.chainId === 3){
+                    await sleep(10000);
+                } else {
+                    await sleep(30000);
+                }
             }
             else {
                 console.log(`Not waiting... ${latest_block} - ${from_block}`);

@@ -77,6 +77,24 @@ module.exports = {
       provider: _ => getProvider(),
       confirmations: CONFIRMATIONS,
     },
+    telosTestnet: {
+      gas: GAS_LIMIT,
+      network_id: 41,
+      timeoutBlocks: 10,
+      networkCheckTimeout: 10000,
+      gasPrice: GAS_PRICE,
+      provider: _ => getProvider(),
+      confirmations: CONFIRMATIONS,
+    },
+    telosMainnet: {
+      gas: GAS_LIMIT,
+      network_id: 40,
+      timeoutBlocks: 10,
+      networkCheckTimeout: 10000,
+      gasPrice: GAS_PRICE,
+      provider: _ => getProvider(),
+      confirmations: CONFIRMATIONS,
+    },
   },
   compilers: {
     solc: {
