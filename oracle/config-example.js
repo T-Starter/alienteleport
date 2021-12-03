@@ -1,7 +1,5 @@
 module.exports = {
-    precision: 4,
-    symbol: 'START',
-    network: 'BSC',
+    network: 'BSC', // ETH, TELOS, BSC
     chainId: '2',
     eos: {
         wsEndpoint: 'ws://178.63.44.179:8082',
@@ -14,7 +12,6 @@ module.exports = {
     eth: {
         wsEndpoint: 'wss://ropsten.infura.io/ws/v3/070239498bd64e588d26301a8c2ef6e6',
         endpoint: 'https://ropsten.infura.io/v3/070239498bd64e588d26301a8c2ef6e6',
-        teleportContract: '0x5b6a8e651c4083177851d34409685977ae21e4ca',
         oracleAccount: '0x111111111111111111111111111111111111111',
         privateKey: 'ABC434DCF...'
     }

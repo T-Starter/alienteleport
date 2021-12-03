@@ -87,7 +87,39 @@ const getSymFromAsset = function(asset) {
     return sym;
 };
 
-const process_claimed = async (from_block, to_block) => {
+// process logs for all topics
+const process_logs = async (from_block, to_block) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+  
+        const query = {
+          fromBlock: from_block,
+          toBlock: to_block,
+          address: config.eth.vaultAddress,
+          topics: [[teleport_topic,claimed_topic]],
+        };
+        console.log(query);
+        const res = await provider.getLogs(query);
+        console.log(res);
+        if (res.length) {
+          let teleport_events = res.filter((log) => {
+            return log.topics[0] === teleport_topic;
+          });
+          let claimed_events = res.filter((log) => {
+            return log.topics[0] === claimed_topic;
+          });
+          await process_teleported(teleport_events);
+          await process_claimed(claimed_events);
+        }
+  
+        resolve();
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+
+const process_claimed = async (events) => {
     return new Promise(async (resolve, reject) => {
         try {
             console.log("Fetching all rows from tokens table");
@@ -109,25 +141,16 @@ const process_claimed = async (from_block, to_block) => {
                 const tokenPrecision = getDecimalFromAsset(token.token);
                 const tokenSymbol = getSymFromAsset(token.token);
 
-                const query = {
-                    fromBlock: from_block,
-                    toBlock: to_block,
-                    address: tokenAddress,
-                    topics: [claimed_topic]
-                };
-                // console.log(query);
-                const res = await provider.getLogs(query);
-                // console.log(res);
-                if (res.length){
-                    for (let r = 0; r < res.length; r++){
+                if (events.length){
+                    for (let r = 0; r < events.length; r++){
                         let data;
-                        if (res[r].topics[0] == claimed_topic){
-                            data = await ethers.utils.defaultAbiCoder.decode([ 'uint64', 'address', 'uint' ], res[r].data);
+                        if (events[r].topics[0] == claimed_topic){
+                            data = await ethers.utils.defaultAbiCoder.decode([ 'uint64', 'address', 'uint' ], events[r].data);
                         } else {
                             continue;
                         }
                         // console.log(data)
-                        // console.log(res[r], data, data[1].toString());
+                        // console.log(events[r], data, data[1].toString());
                         const id = data[0].toNumber();
                         const to_eth = data[1].replace('0x', '') + '000000000000000000000000';
                         const quantity = (data[2].toNumber() / Math.pow(10, tokenPrecision)).toFixed(tokenPrecision) + ' ' + tokenSymbol;
@@ -146,9 +169,9 @@ const process_claimed = async (from_block, to_block) => {
                                 quantity
                             }
                         });
-                        // console.log(actions, res[r].transactionHash);
+                        // console.log(actions, events[r].transactionHash);
     
-                        await_confirmation(res[r].transactionHash).then(async () => {
+                        await_confirmation(events[r].transactionHash).then(async () => {
                             try {
                                 const eos_res = await eos_api.transact({actions}, {
                                     blocksBehind: 3,
@@ -182,7 +205,7 @@ const process_claimed = async (from_block, to_block) => {
     });
 }
 
-const process_teleported = async (from_block, to_block) => {
+const process_teleported = async (events) => {
     return new Promise(async (resolve, reject) => {
         try {
             console.log("Fetching all rows from tokens table");
@@ -204,25 +227,16 @@ const process_teleported = async (from_block, to_block) => {
                 const tokenPrecision = getDecimalFromAsset(token.token);
                 const tokenSymbol = getSymFromAsset(token.token);
 
-                const query = {
-                    fromBlock: from_block,
-                    toBlock: to_block,
-                    address: tokenAddress,
-                    topics: [teleport_topic]
-                };
-                // console.log(query);
-                const res = await provider.getLogs(query);
-                // console.log(res);
-                if (res.length){
-                    for (let r = 0; r < res.length; r++){
+                if (events.length){
+                    for (let r = 0; r < events.length; r++){
                         let data;
-                        if (res[r].topics[0] == teleport_topic){
-                            data = await ethers.utils.defaultAbiCoder.decode([ 'string', 'uint', 'uint' ], res[r].data);                            
+                        if (events[r].topics[0] == teleport_topic){
+                            data = await ethers.utils.defaultAbiCoder.decode([ 'string', 'uint', 'uint' ], events[r].data);                            
                         } else {
                             continue;
                         }
 
-                        // console.log(res[r], data, data[1].toString())
+                        // console.log(events[r], data, data[1].toString())
 
                         const tokens = data[1].toNumber();
                         if (tokens <= 0){
@@ -235,7 +249,7 @@ const process_teleported = async (from_block, to_block) => {
                         const to_chain_id = data[2].toNumber();
                         const amount = (tokens / Math.pow(10, tokenPrecision)).toFixed(tokenPrecision);
                         const quantity = `${amount} ${tokenSymbol}`
-                        const txid = res[r].transactionHash.replace(/^0x/, '');
+                        const txid = events[r].transactionHash.replace(/^0x/, '');
 
                         const actions = [];
                         actions.push({
@@ -257,7 +271,7 @@ const process_teleported = async (from_block, to_block) => {
                         });
                         // console.log(actions);
 
-                        await_confirmation(res[r].transactionHash).then(async () => {
+                        await_confirmation(events[r].transactionHash).then(async () => {
                             try {
                                 const eos_res = await eos_api.transact({actions}, {
                                     blocksBehind: 3,
@@ -294,6 +308,7 @@ const run = async (from_block = 'latest') => {
     while (true){
         try {
             const block = await provider.getBlock('latest');
+            console.log(`Fetching events from block ${block}`);
             const latest_block = block.number;
 
             if (from_block === 'latest'){
@@ -319,8 +334,7 @@ const run = async (from_block = 'latest') => {
             }
             console.log(`Getting events from block ${from_block} to ${to_block}`)
 
-            await process_claimed(from_block, to_block);
-            await process_teleported(from_block, to_block);
+            await process_logs(from_block, to_block);
 
             from_block = to_block;
 
