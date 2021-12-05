@@ -6,136 +6,131 @@ This oracle listens to the ethereum blockchain for `Teleport` events.
 When an event is received, it will call the `received` action on the EOS chain
  */
 
-process.title = `oracle-eth ${process.env["CONFIG"]}`;
+process.title = `oracle-eth ${process.env['CONFIG']}`;
 
-const { Api, JsonRpc } = require("eosjs");
-const { TextDecoder, TextEncoder } = require("text-encoding");
-const { JsSignatureProvider } = require("eosjs/dist/eosjs-jssig");
-const fetch = require("node-fetch");
-const fs = require("fs");
-const ethers = require("ethers");
+const {Api, JsonRpc} = require('eosjs');
+const {TextDecoder, TextEncoder} = require('text-encoding');
+const {JsSignatureProvider} = require('eosjs/dist/eosjs-jssig');
+const fetch = require('node-fetch');
+const fs = require('fs');
+const ethers = require('ethers');
 
-const config = require(process.env["CONFIG"] || "./config");
+const config = require(process.env['CONFIG'] || './config');
 
 const provider = new ethers.providers.JsonRpcProvider(config.eth.endpoint);
 
 const signatureProvider = new JsSignatureProvider([config.eos.privateKey]);
-const rpc = new JsonRpc(config.eos.endpoint, { fetch });
-const eos_api = new Api({
-  rpc,
-  signatureProvider,
-  textDecoder: new TextDecoder(),
-  textEncoder: new TextEncoder(),
-});
+const rpc = new JsonRpc(config.eos.endpoint, {fetch});
+const eos_api = new Api({ rpc, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder() });
 
-const network = config.network || "ETH";
+const network = config.network || 'ETH'
 const blocks_file = `.oracle_${config.network}_block-${config.eth.oracleAccount}`;
 const POLL_INTERVAL = config.pollingInterval || 30000;
 const DEFAULT_BLOCKS_TO_WAIT = 5;
-const claimed_topic = "0xf20fc6923b8057dd0c3b606483fcaa038229bb36ebc35a0040e3eaa39cf97b17";
-const teleport_topic = "0x622824274e0937ee319b036740cd0887131781bc2032b47eac3e88a1be17f5d5";
+const claimed_topic = '0xf20fc6923b8057dd0c3b606483fcaa038229bb36ebc35a0040e3eaa39cf97b17';
+const teleport_topic = '0x622824274e0937ee319b036740cd0887131781bc2032b47eac3e88a1be17f5d5';
 
 const sleep = async (ms) => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-};
+    return new Promise(resolve => {
+        setTimeout(resolve, ms);
+    })
+}
 
 const await_confirmation = async (txid) => {
-  return new Promise(async (resolve) => {
-    let resolved = false;
-    while (!resolved) {
-      provider.getTransactionReceipt(txid).then((receipt) => {
-        if (receipt && receipt.confirmations > DEFAULT_BLOCKS_TO_WAIT) {
-          console.log(`TX ${txid} has ${receipt.confirmations} confirmations`);
-          resolve(receipt);
-          resolved = true;
+    return new Promise(async resolve => {
+        let resolved = false;
+        while (!resolved){
+            provider.getTransactionReceipt(txid).then(receipt => {
+                if (receipt && receipt.confirmations > DEFAULT_BLOCKS_TO_WAIT) {
+                    console.log(`TX ${txid} has ${receipt.confirmations} confirmations`);
+                    resolve(receipt);
+                    resolved = true;
+                }
+            });
+            await sleep(10000);
         }
-      });
-      await sleep(10000);
-    }
-  });
-};
+    });
+}
 
 const load_block = async () => {
-  let block_number = "latest";
-  if (fs.existsSync(blocks_file)) {
-    const file_contents = await fs.readFileSync(blocks_file);
-    if (file_contents) {
-      block_number = parseInt(file_contents);
-      if (isNaN(block_number)) {
-        block_number = "latest";
-      } else {
-        // for fresh start go back 50 blocks
-        block_number -= 50;
-      }
+    let block_number = 'latest';
+    if (fs.existsSync(blocks_file)){
+        const file_contents = await fs.readFileSync(blocks_file);
+        if (file_contents){
+            block_number = parseInt(file_contents);
+            if (isNaN(block_number)){
+                block_number = 'latest';
+            }
+            else {
+                // for fresh start go back 50 blocks
+                block_number -= 50;
+            }
+        }
     }
-  }
 
-  return block_number;
-};
+    return block_number;
+}
 const save_block = async (block_num) => {
-  await fs.writeFileSync(blocks_file, block_num.toString());
-};
+    await fs.writeFileSync(blocks_file, block_num.toString());
+}
 
 // Gets decimal from base token asset { "sym": "4,START", "contract": "token.start" }
-const getDecimalFromAsset = function (asset) {
-  let idx = asset.sym.indexOf(",");
-  let decimal = asset.sym.slice(0, idx);
-  return decimal;
+const getDecimalFromAsset = function(asset) {
+    let idx = asset.sym.indexOf(",");
+    let decimal = asset.sym.slice(0, idx);
+    return decimal;
 };
 
 // Gets symbol from base token asset { "sym": "4,START", "contract": "token.start" }
-const getSymFromAsset = function (asset) {
-  let idx = asset.sym.indexOf(",") + 1;
-  let sym = asset.sym.slice(idx);
-  return sym;
+const getSymFromAsset = function(asset) {
+    let idx = asset.sym.indexOf(",") + 1;
+    let sym = asset.sym.slice(idx);
+    return sym;
 };
 
 // process logs for all topics
 const process_logs = async (from_block, to_block) => {
-  return new Promise(async (resolve, reject) => {
-    try {
+    return new Promise(async (resolve, reject) => {
+        try {
 
-      const query = {
-        fromBlock: from_block,
-        toBlock: to_block,
-        address: config.eth.vaultAddress,
-          topics: [[teleport_topic,claimed_topic]],
-      };
-      // console.log(query);
-      const res = await provider.getLogs(query);
-      // console.log(res);
-      if (res.length) {
-          let teleport_events = res.filter((log) => {
-            return log.topics[0] === teleport_topic;
-        });
-        let claimed_events = res.filter((log) => {
-          return log.topics[0] === claimed_topic;
-        });
-          await process_teleported(teleport_events);
-        await process_claimed(claimed_events);
-      }
+            const query = {
+                fromBlock: from_block,
+                toBlock: to_block,
+                address: config.eth.vaultAddress,
+                topics: [[teleport_topic,claimed_topic]],
+            };
+            // console.log(query);
+            const res = await provider.getLogs(query);
+            // console.log(res);
+            if (res.length) {
+                let teleport_events = res.filter((log) => {
+                    return log.topics[0] === teleport_topic;
+                });
+                let claimed_events = res.filter((log) => {
+                    return log.topics[0] === claimed_topic;
+                });
+                await process_teleported(teleport_events);
+                await process_claimed(claimed_events);
+            }
 
-      resolve();
-    } catch (e) {
-      reject(e);
-    }
-  });
+            resolve();
+        } catch (e) {
+            reject(e);
+        }
+    });
 }
 
 const process_claimed = async (events) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      // console.log(events);
-      console.log("Fetching all rows from tokens table");
-      const tokensTable = await rpc.get_table_rows({
-        code: config.eos.teleportContract,
-        scope: config.eos.teleportContract,
-        table: "tokens",
-        limit: 1000,
-        reverse: true,
-      });
+    return new Promise(async (resolve, reject) => {
+        try {
+            console.log("Fetching all rows from tokens table");
+            const tokensTable = await rpc.get_table_rows({
+                code: config.eos.teleportContract,
+                scope: config.eos.teleportContract,
+                table: "tokens",
+                limit: 1000,
+                reverse: true,
+            });
 
             let tokensList = tokensTable.rows.filter(token => token.enabled == 1);
             let tokenAddrList = [...new Set(tokensList.map(r => r.remote_contracts).flat().map(r => r.value))];
@@ -176,7 +171,7 @@ const process_claimed = async (events) => {
                             }
                         });
                         // console.log(actions, events[r].transactionHash);
-    
+
                         await_confirmation(events[r].transactionHash).then(async () => {
                             try {
                                 const eos_res = await eos_api.transact({actions}, {
@@ -196,14 +191,14 @@ const process_claimed = async (events) => {
                                 }
                             }
                         });
-    
+
                         await sleep(500);
                     }
                 }
-    
+
                 resolve();
             }
-            
+
         }
         catch (e){
             reject(e);
@@ -237,7 +232,7 @@ const process_teleported = async (events) => {
                     for (let r = 0; r < events.length; r++){
                         let data;
                         if (events[r].topics[0] == teleport_topic){
-                            data = await ethers.utils.defaultAbiCoder.decode([ 'string', 'uint', 'uint' ], events[r].data);                            
+                            data = await ethers.utils.defaultAbiCoder.decode([ 'string', 'uint', 'uint' ], events[r].data);
                         } else {
                             continue;
                         }
@@ -348,32 +343,35 @@ const run = async (from_block = 'latest') => {
             await save_block(to_block);
 
             if (latest_block - from_block <= 1000){
-        console.log("Waiting...");
-        await sleep(POLL_INTERVAL);
-      } else {
-        console.log(`Not waiting... ${latest_block} - ${from_block}`);
-      }
-    } catch (e) {
-      console.error(e.message);
+                console.log('Waiting...');
+                await sleep(POLL_INTERVAL);
+            }
+            else {
+                console.log(`Not waiting... ${latest_block} - ${from_block}`);
+            }
+        }
+        catch (e){
+            console.error(e.message);
+        }
     }
-  }
-};
+}
 
-let start_block = "latest";
-if (process.argv[2]) {
-  const lb = parseInt(process.argv[2]);
-  if (isNaN(lb)) {
-    console.error(`You must supply start block as an integer on command line`);
-    process.exit(1);
-  }
-  start_block = lb;
-} else if (process.env["START_BLOCK"]) {
-  const lb = parseInt(process.env["START_BLOCK"]);
-  if (isNaN(lb)) {
-    console.error(`You must supply start block as an integer in env`);
-    process.exit(1);
-  }
-  start_block = lb;
+let start_block = 'latest';
+if (process.argv[2]){
+    const lb = parseInt(process.argv[2]);
+    if (isNaN(lb)){
+        console.error(`You must supply start block as an integer on command line`);
+        process.exit(1);
+    }
+    start_block = lb;
+}
+else if (process.env['START_BLOCK']){
+    const lb = parseInt(process.env['START_BLOCK']);
+    if (isNaN(lb)){
+        console.error(`You must supply start block as an integer in env`);
+        process.exit(1);
+    }
+    start_block = lb;
 }
 
 run(start_block);
