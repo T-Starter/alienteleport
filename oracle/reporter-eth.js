@@ -15,7 +15,7 @@ const fetch = require('node-fetch');
 const fs = require('fs');
 const ethers = require('ethers');
 
-const config = require(process.env['CONFIG'] || './config');
+const config = require(process.env['CONFIG'] || './config/config');
 
 const provider = new ethers.providers.JsonRpcProvider(config.eth.endpoint);
 
@@ -133,25 +133,41 @@ const process_claimed = async (events) => {
             });
 
             let tokensList = tokensTable.rows.filter(token => token.enabled == 1);
+            // filter key == config.chainId
             let tokenAddrList = [...new Set(tokensList.map(r => r.remote_contracts).flat().map(r => r.value))];
-            // console.log(tokensList);
+//            console.log(tokensList);
+            console.log(tokenAddrList);
 
             for (const tokenAddress of tokenAddrList){
+                console.log('...processing ', tokenAddress);
+
                 // find token from tokenAddress in tokensList
                 const token = tokensList.find(token => token.remote_contracts.find(remote => remote.value == tokenAddress));
                 const tokenPrecision = getDecimalFromAsset(token.token);
                 const tokenSymbol = getSymFromAsset(token.token);
 
+//                console.log(' .token ', token, tokenPrecision, tokenSymbol);
+
                 if (events.length){
                     for (let r = 0; r < events.length; r++){
+
+//                        console.log('  .events ', events[r]);
+                        if (events[r].address != tokenAddress) {
+//                            console.log('>>>>>>> skipping', events[r]);
+                            console.log('>>>>>>> skipping process_claimed ');
+                            continue;
+                        }
+
                         let data;
                         if (events[r].topics[0] == claimed_topic){
                             data = await ethers.utils.defaultAbiCoder.decode([ 'uint64', 'address', 'uint' ], events[r].data);
                         } else {
                             continue;
                         }
-                        // console.log(data)
-                        // console.log(events[r], data, data[1].toString());
+
+                        console.log('>>>>>>> processing process_claimed ', data)
+                        console.log('>>>>>>> processing', events[r], data, data[1].toString());
+
                         const id = data[0].toNumber();
                         const to_eth = data[1].replace('0x', '') + '000000000000000000000000';
                         const quantity = (data[2].toNumber() / Math.pow(10, tokenPrecision)).toFixed(tokenPrecision) + ' ' + tokenSymbol;
@@ -174,11 +190,12 @@ const process_claimed = async (events) => {
 
                         await_confirmation(events[r].transactionHash).then(async () => {
                             try {
-                                const eos_res = await eos_api.transact({actions}, {
-                                    blocksBehind: 3,
-                                    expireSeconds: 180,
-                                });
-                                console.log(`Sent notification of claim with txid ${eos_res.transaction_id}, for ID ${id}, account 0x${to_eth.substr(0, 40)}, quantity ${quantity}`);
+//                                const eos_res = await eos_api.transact({actions}, {
+//                                    blocksBehind: 3,
+//                                    expireSeconds: 180,
+//                                });
+//                                console.log(`Sent notification of claim with txid ${eos_res.transaction_id}, for ID ${id}, account 0x${to_eth.substr(0, 40)}, quantity ${quantity}`);
+                                console.log(`Sent notification of claim with txid ?????, for ID ${id}, account 0x${to_eth.substr(0, 40)}, quantity ${quantity}`);
                                 // resolve();
                             }
                             catch (e){
@@ -220,7 +237,8 @@ const process_teleported = async (events) => {
 
             let tokensList = tokensTable.rows.filter(token => token.enabled == 1);
             let tokenAddrList = [...new Set(tokensList.map(r => r.remote_contracts).flat().map(r => r.value))];
-            // console.log(tokensList);
+//            console.log(tokensList);
+            console.log(tokenAddrList);
 
             for (const tokenAddress of tokenAddrList){
                 // find token from tokenAddress in tokensList
@@ -230,12 +248,22 @@ const process_teleported = async (events) => {
 
                 if (events.length){
                     for (let r = 0; r < events.length; r++){
+
+                        if (events[r].address != tokenAddress) {
+//                            console.log('>>>>>>> skipping', events[r]);
+                            console.log('>>>>>>> skipping process_teleported');
+                            continue;
+                        }
+
                         let data;
                         if (events[r].topics[0] == teleport_topic){
                             data = await ethers.utils.defaultAbiCoder.decode([ 'string', 'uint', 'uint' ], events[r].data);
                         } else {
                             continue;
                         }
+
+                        console.log('>>>>>>> processing process_teleported ', data)
+                        console.log('>>>>>>> processing', events[r], data, data[1].toString());
 
                         // console.log(events[r], data, data[1].toString())
 
@@ -274,11 +302,12 @@ const process_teleported = async (events) => {
 
                         await_confirmation(events[r].transactionHash).then(async () => {
                             try {
-                                const eos_res = await eos_api.transact({actions}, {
-                                    blocksBehind: 3,
-                                    expireSeconds: 180,
-                                });
-                                console.log(`Sent notification of teleport with txid ${eos_res.transaction_id}`);
+//                                const eos_res = await eos_api.transact({actions}, {
+//                                    blocksBehind: 3,
+//                                    expireSeconds: 180,
+//                                });
+//                                console.log(`Sent notification of teleport with txid ${eos_res.transaction_id}`);
+                                console.log(`Sent notification of teleport with txid ?????`);
                                 // resolve();
                             }
                             catch (e){
@@ -309,7 +338,7 @@ const run = async (from_block = 'latest') => {
     while (true){
         try {
             const block = await provider.getBlock('latest');
-            console.log(`Fetching events from block ${block}`);
+            console.log(`Fetching events from block ${block.number}`);
             const latest_block = block.number;
 
             if (from_block === 'latest'){
