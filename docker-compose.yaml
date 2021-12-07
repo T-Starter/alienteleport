@@ -1,6 +1,6 @@
 version: '3'
 services:
-  # Telos testnet
+  # Telos (native) testnet
   teleport-reporter1-telos-testnet:
     command: "node reporter-eos.js"
     build:

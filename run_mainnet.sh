@@ -5,4 +5,4 @@
 # docker run --name teleport -dt teleport
 
 # docker-compose down
-docker-compose -f docker-compose.mainnet.yaml  up -d 
+docker-compose -f docker-compose.mainnet.yaml up -d
