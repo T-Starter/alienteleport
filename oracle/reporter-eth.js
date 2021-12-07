@@ -315,7 +315,6 @@ const run = async (from_block = 'latest') => {
     while (true){
         try {
             const block = await provider.getBlock('latest');
-            console.log(`Fetching events from block ${block.number}`);
             const latest_block = block.number;
 
             if (from_block === 'latest'){
@@ -353,7 +352,7 @@ const run = async (from_block = 'latest') => {
                 await sleep(POLL_INTERVAL);
             }
             else {
-                console.log(`Not waiting... ${latest_block} - ${from_block}`);
+                console.log(`Not waiting... ${latest_block - from_block} ...behind head block`);
             }
         }
         catch (e){
