@@ -96,8 +96,7 @@ const process_logs = async (from_block, to_block) => {
             const query = {
                 fromBlock: from_block,
                 toBlock: to_block,
-                address: config.eth.vaultAddress,
-                topics: [[teleport_topic,claimed_topic]],
+                topics: [[claimed_topic,teleport_topic]],
             };
             // console.log(query);
             const res = await provider.getLogs(query);
