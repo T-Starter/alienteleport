@@ -17,5 +17,5 @@ module.exports = async (_deployer, _network, _accounts) => {
   for (const reporter of REPORTERS) {
     await TeleportTokenFactoryInstance.regOracle(reporter)
   }
-  // _deployer.deploy(artifacts.require('TeleportToken'), "DEWIE", "Dewald", 4, "1000000000000000000000", 1, 1)
+  // _deployer.deploy(artifacts.require('TeleportToken'), "TEST", "tester", 4, "1000000000000000000000", 1, 1)
 }

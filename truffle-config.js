@@ -3,6 +3,7 @@ const {
   GAS_PRICE,
   PRIVATE_KEY,
   ETHERSCAN_API_KEY,
+  BSCSCAN_API_KEY,
 } = require('./config.json')
 const WalletProvider = require('@truffle/hdwallet-provider')
 
@@ -115,5 +116,6 @@ module.exports = {
   ],
   api_keys: {
     etherscan: ETHERSCAN_API_KEY,
+    bscscan: BSCSCAN_API_KEY,
   },
 }
