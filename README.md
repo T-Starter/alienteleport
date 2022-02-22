@@ -4,17 +4,18 @@ Contracts and tools to create a bridge between WAX tokens and an ERC-20 counterp
 
 ## Contracts
 
-There are contracts available for both EOSIO chains and Ethereum, both should be deployed 
+There are contracts available for both EOSIO chains and Ethereum, both should be deployed
 on their respective chains.
 
 ### Deployment guide
+
 After cloning the repository, first install the dependencies:
 
 ```
 ❍ npm i
 ```
 
-Next, you need to fill in the the following information in the __`config.json`__
+Next, you need to fill in the the following information in the **`config.json`**
 
 Finally, deploy the vault to your chose network via the command:
 
@@ -22,7 +23,7 @@ Finally, deploy the vault to your chose network via the command:
 ❍ npx truffle migrate --network <network> --reset
 ```
 
-Currently, there exists in the __`./truffle-config.js`__ configurations for the following __`<network>s`__
+Currently, there exists in the **`./truffle-config.js`** configurations for the following **`<network>s`**
 
 ```
 xDai
@@ -44,7 +45,7 @@ Finally, to verify the deployed contract run:
 
 ## Process
 
-Transferring from EOSIO -> ETH requires depositing the tokens to the EOSIO contract with a standard transfer (no memo required), 
+Transferring from EOSIO -> ETH requires depositing the tokens to the EOSIO contract with a standard transfer (no memo required),
 then teleporting the tokens using the `teleport` action.
 
 Transferring from ETH -> EOSIO simply requires callint the `teleport` function on the Ethereum contract.
@@ -60,4 +61,3 @@ Oracles can then call the received function on each contract when they see a tra
 1. Create `oracle/config` directory, copy config-example.js to config/config1.js (for reporter 1).
 2. Change the configuration settings to match your tokens.
 3. Start the containers by running `run.sh`.
-
