@@ -144,7 +144,7 @@ const process_claimed = async (events) => {
 
                     // find token from tokenAddress in tokensList
                     const token = tokensList.find(token => token.remote_contracts.find(remote => remote.value.toLowerCase() == events[r].address.toLowerCase()));
-                    const tokenPrecision = getDecimalFromAsset(token.token);
+                    const tokenNativePrecision = getDecimalFromAsset(token.token);
                     const tokenSymbol = getSymFromAsset(token.token);
 
                     let data;
@@ -153,11 +153,11 @@ const process_claimed = async (events) => {
                     } else {
                         continue;
                     }
-                    // console.log(data)
+                    console.log(data)
                     // console.log(events[r], data, data[1].toString());
                     const id = data[0].toNumber();
                     const to_eth = data[1].replace('0x', '') + '000000000000000000000000';
-                    const quantity = (data[2].toNumber() / Math.pow(10, tokenPrecision)).toFixed(tokenPrecision) + ' ' + tokenSymbol;
+                    const quantity = (data[2].toNumber() / Math.pow(10, tokenNativePrecision)).toFixed(tokenNativePrecision) + ' ' + tokenSymbol;
                     const actions = [];
                     actions.push({
                         account: config.eos.teleportContract,
@@ -233,7 +233,7 @@ const process_teleported = async (events) => {
 
                     // find token from tokenAddress in tokensList
                     const token = tokensList.find(token => token.remote_contracts.find(remote => remote.value.toLowerCase() == events[r].address.toLowerCase()));
-                    const tokenPrecision = getDecimalFromAsset(token.token);
+                    const tokenNativePrecision = getDecimalFromAsset(token.token);
                     const tokenSymbol = getSymFromAsset(token.token);
 
                     let data;
@@ -254,7 +254,7 @@ const process_teleported = async (events) => {
                     const to = data[0];
                     const from_chain_id = config.chainId;
                     const to_chain_id = data[2].toNumber();
-                    const amount = (tokens / Math.pow(10, tokenPrecision)).toFixed(tokenPrecision);
+                    const amount = (tokens / Math.pow(10, tokenNativePrecision)).toFixed(tokenNativePrecision);
                     const quantity = `${amount} ${tokenSymbol}`
                     const txid = events[r].transactionHash.replace(/^0x/, '');
 
