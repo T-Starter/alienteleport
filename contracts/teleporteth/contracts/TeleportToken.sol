@@ -4,7 +4,7 @@ pragma solidity ^0.8.6;
  */
 pragma experimental ABIEncoderV2;
 
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
 
 contract Verify {
     function recoverSigner(bytes32 message, bytes memory sig)
@@ -284,6 +284,8 @@ contract TeleportToken is ERC20Interface, Owned, Oracled, Verify {
         balances[address(0)] = _totalSupply;
         threshold = _threshold;
         thisChainId = _thisChainId;
+
+        // TODO Get the oracles from factory instead of hardcoding. https://ethereum.stackexchange.com/questions/45277/calling-one-contract-to-another-contract-method
     }
 
     // ------------------------------------------------------------------------
