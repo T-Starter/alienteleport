@@ -259,10 +259,11 @@ contract TeleportToken is ERC20Interface, Owned, Oracled, Verify {
         uint64 id;
         uint32 ts;
         uint64 fromAddr;
-        uint64 quantity;
+        uint256 quantity;
         uint64 symbolRaw;
         uint8 chainId;
         address toAddress;
+        uint8 nativeDecimals;
     }
 
     // ------------------------------------------------------------------------
@@ -448,6 +449,7 @@ contract TeleportToken is ERC20Interface, Owned, Oracled, Verify {
         uint8 chainId;
         address toAddress;
         uint64 requiredSymbolRaw;
+        uint8 nativeDecimals;
 
         assembly {
             id := mload(add(add(sigData, 0x8), 0))
@@ -456,15 +458,19 @@ contract TeleportToken is ERC20Interface, Owned, Oracled, Verify {
             quantity := mload(add(add(sigData, 0x8), 20))
             symbolRaw := mload(add(add(sigData, 0x8), 29))
             chainId := mload(add(add(sigData, 0x1), 36))
-            toAddress := mload(add(add(sigData, 0x14), 37))
+            nativeDecimals := mload(add(add(sigData, 0x1), 37))
+            toAddress := mload(add(add(sigData, 0x14), 38))
         }
         td.id = Endian.reverse64(id);
         td.ts = Endian.reverse32(ts);
         td.fromAddr = Endian.reverse64(fromAddr);
-        td.quantity = Endian.reverse64(quantity);
         td.symbolRaw = Endian.reverse64(symbolRaw);
         td.chainId = chainId;
         td.toAddress = toAddress;
+        td.nativeDecimals = nativeDecimals;
+        td.quantity =
+            Endian.reverse64(quantity) *
+            10**(decimals - nativeDecimals);
 
         requiredSymbolRaw = uint64(
             bytes8(stringToBytes32(TeleportToken.symbol))
@@ -489,7 +495,7 @@ contract TeleportToken is ERC20Interface, Owned, Oracled, Verify {
         TeleportData memory td = verifySigData(sigData);
 
         // verify signatures
-        require(sigData.length == 69, "Signature data is the wrong size");
+        require(sigData.length == 71, "Signature data is the wrong size");
         require(
             signatures.length <= 10,
             "Maximum of 10 signatures can be provided"

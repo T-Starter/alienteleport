@@ -33,6 +33,15 @@ const fromHexString = (hexString) =>
 const toHexString = (bytes) =>
     bytes.reduce((str, byte) => str + byte.toString(16).padStart(2, "0"), "");
 
+const asToDeci = (str) => {
+    if (str.length > 0) {
+        let commaidx = str.indexOf(".") + 1;
+        let spaceidx = str.indexOf(" ");
+        const precision = str.slice(commaidx, spaceidx).length;
+        return precision;
+    } else return 0;
+}
+
 const sleep = (time = 0, throwError = false) => {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
@@ -80,7 +89,6 @@ const run = async () => {
                         }`
                     );
 
-
                     // eth signing
                     // sign the transaction and send to the eos chain
 
@@ -91,14 +99,15 @@ const run = async () => {
                     sb.pushNumberAsUint64(teleport.id);
                     sb.pushUint32(teleport.time);
                     sb.pushName(teleport.account);
-                    sb.pushAsset(quantity);
+                    sb.pushAsset(teleport.quantity);
                     sb.push(teleport.chain_id);
+                    sb.push(asToDeci(teleport.quantity));
                     sb.pushArray(fromHexString(teleport.eth_address));
 
-                    const data_buf = Buffer.from(sb.array.slice(0, 69));
+                    const data_buf = Buffer.from(sb.array.slice(0, 71));
                     const msg_hash = ethUtil.keccak(data_buf);
-                    console.log(msg_hash.toString("hex"));
-                    console.log(config.eth.privateKey);
+                    // console.log(msg_hash.toString("hex"));
+                    // console.log(config.eth.privateKey);
                     const pk = Buffer.from(config.eth.privateKey, "hex");
                     const sig = ethUtil.ecsign(msg_hash, pk);
                     // console.log(pk, sig);

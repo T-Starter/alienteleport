@@ -3,25 +3,28 @@ services:
   # Telos mainnet
   teleport-reporter1-telos:
     command: "node reporter-eos.js"
+    restart: always
     build:
       context: .
-    image: "teleport-reporter:v1"
+    image: "teleport-reporter:v2"
     container_name: teleport-reporter1-telos
     volumes:
       - ./oracle/config/tevm-config1.js:/home/node/app/reporter/config.js
   teleport-reporter2-telos:
     command: "node reporter-eos.js"
+    restart: always
     build:
       context: .
-    image: "teleport-reporter:v1"
+    image: "teleport-reporter:v2"
     container_name: teleport-reporter2-telos
     volumes:
       - ./oracle/config/tevm-config2.js:/home/node/app/reporter/config.js
   teleport-reporter3-telos:
     command: "node reporter-eos.js"
+    restart: always
     build:
       context: .
-    image: "teleport-reporter:v1"
+    image: "teleport-reporter:v2"
     container_name: teleport-reporter3-telos
     volumes:
       - ./oracle/config/tevm-config3.js:/home/node/app/reporter/config.js
@@ -29,25 +32,28 @@ services:
   # Ethereum mainnet
   teleport-reporter1-eth:
     command: "node reporter-eth.js"
+    restart: always
     build:
       context: .
-    image: "teleport-reporter:v1"
+    image: "teleport-reporter:v2"
     container_name: teleport-reporter1-eth
     volumes:
       - ./oracle/config/eth-config1.js:/home/node/app/reporter/config.js
   teleport-reporter2-eth:
     command: "node reporter-eth.js"
+    restart: always
     build:
       context: .
-    image: "teleport-reporter:v1"
+    image: "teleport-reporter:v2"
     container_name: teleport-reporter2-eth
     volumes:
       - ./oracle/config/eth-config2.js:/home/node/app/reporter/config.js
   teleport-reporter3-eth:
     command: "node reporter-eth.js"
+    restart: always
     build:
       context: .
-    image: "teleport-reporter:v1"
+    image: "teleport-reporter:v2"
     container_name: teleport-reporter3-eth
     volumes:
       - ./oracle/config/eth-config3.js:/home/node/app/reporter/config.js
@@ -55,25 +61,28 @@ services:
   # BSC mainnet
   teleport-reporter1-bsc:
     command: "node reporter-eth.js"
+    restart: always
     build:
       context: .
-    image: "teleport-reporter:v1"
+    image: "teleport-reporter:v2"
     container_name: teleport-reporter1-bsc
     volumes:
       - ./oracle/config/bsc-config1.js:/home/node/app/reporter/config.js
   teleport-reporter2-bsc:
     command: "node reporter-eth.js"
+    restart: always
     build:
       context: .
-    image: "teleport-reporter:v1"
+    image: "teleport-reporter:v2"
     container_name: teleport-reporter2-bsc
     volumes:
       - ./oracle/config/bsc-config2.js:/home/node/app/reporter/config.js
   teleport-reporter3-bsc:
     command: "node reporter-eth.js"
+    restart: always
     build:
       context: .
-    image: "teleport-reporter:v1"
+    image: "teleport-reporter:v2"
     container_name: teleport-reporter3-bsc
     volumes:
       - ./oracle/config/bsc-config3.js:/home/node/app/reporter/config.js
@@ -81,25 +90,28 @@ services:
   # Telos evm mainnet
   teleport-reporter1-tevm:
     command: "node reporter-eth.js"
+    restart: always
     build:
       context: .
-    image: "teleport-reporter:v1"
+    image: "teleport-reporter:v2"
     container_name: teleport-reporter1-tevm
     volumes:
       - ./oracle/config/tevm-config1.js:/home/node/app/reporter/config.js
   teleport-reporter2-tevm:
     command: "node reporter-eth.js"
+    restart: always
     build:
       context: .
-    image: "teleport-reporter:v1"
+    image: "teleport-reporter:v2"
     container_name: teleport-reporter2-tevm
     volumes:
       - ./oracle/config/tevm-config2.js:/home/node/app/reporter/config.js
   teleport-reporter3-tevm:
     command: "node reporter-eth.js"
+    restart: always
     build:
       context: .
-    image: "teleport-reporter:v1"
+    image: "teleport-reporter:v2"
     container_name: teleport-reporter3-tevm
     volumes:
       - ./oracle/config/tevm-config3.js:/home/node/app/reporter/config.js

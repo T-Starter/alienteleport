@@ -30,6 +30,19 @@ const DEFAULT_BLOCKS_TO_WAIT = 5;
 const claimed_topic = '0xf20fc6923b8057dd0c3b606483fcaa038229bb36ebc35a0040e3eaa39cf97b17';
 const teleport_topic = '0x622824274e0937ee319b036740cd0887131781bc2032b47eac3e88a1be17f5d5';
 
+const tokenABI = [
+    // Read-Only Functions
+    "function balanceOf(address owner) view returns (uint256)",
+    "function decimals() view returns (uint8)",
+    "function symbol() view returns (string)",
+
+    // Authenticated Functions
+    "function transfer(address to, uint amount) returns (bool)",
+
+    // Events
+    "event Transfer(address indexed from, address indexed to, uint amount)"
+];
+
 const sleep = async (ms) => {
     return new Promise(resolve => {
         setTimeout(resolve, ms);
@@ -153,11 +166,18 @@ const process_claimed = async (events) => {
                     } else {
                         continue;
                     }
-                    console.log(data)
+                    // console.log(data)
                     // console.log(events[r], data, data[1].toString());
+
+                    // get remote contract decimals
+                    let remoteContractAddres = events[r].address.toLowerCase()
+                    const erc20 = new ethers.Contract(remoteContractAddres, tokenABI, provider);
+                    let remoteContractPrecision = await erc20.decimals();
+
                     const id = data[0].toNumber();
                     const to_eth = data[1].replace('0x', '') + '000000000000000000000000';
-                    const quantity = (data[2].toNumber() / Math.pow(10, tokenNativePrecision)).toFixed(tokenNativePrecision) + ' ' + tokenSymbol;
+                    const ethAmount = parseFloat(ethers.utils.formatUnits(data[2].toString(), remoteContractPrecision)).toFixed(tokenNativePrecision);
+                    const quantity = ethAmount + ' ' + tokenSymbol;
                     const actions = [];
                     actions.push({
                         account: config.eos.teleportContract,
