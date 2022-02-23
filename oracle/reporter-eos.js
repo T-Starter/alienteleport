@@ -101,8 +101,8 @@ const run = async () => {
                     sb.pushName(teleport.account);
                     sb.pushAsset(teleport.quantity);
                     sb.push(teleport.chain_id);
-                    sb.push(asToDeci(teleport.quantity));
                     sb.pushArray(fromHexString(teleport.eth_address));
+                    sb.push(asToDeci(teleport.quantity));
 
                     const data_buf = Buffer.from(sb.array.slice(0, 71));
                     const msg_hash = ethUtil.keccak(data_buf);

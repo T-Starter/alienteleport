@@ -4,7 +4,7 @@ pragma solidity ^0.8.6;
  */
 pragma experimental ABIEncoderV2;
 
-// import "hardhat/console.sol";
+import "hardhat/console.sol";
 
 contract Verify {
     function recoverSigner(bytes32 message, bytes memory sig)
@@ -458,8 +458,8 @@ contract TeleportToken is ERC20Interface, Owned, Oracled, Verify {
             quantity := mload(add(add(sigData, 0x8), 20))
             symbolRaw := mload(add(add(sigData, 0x8), 29))
             chainId := mload(add(add(sigData, 0x1), 36))
-            nativeDecimals := mload(add(add(sigData, 0x1), 37))
-            toAddress := mload(add(add(sigData, 0x14), 38))
+            toAddress := mload(add(add(sigData, 0x14), 37))
+            nativeDecimals := mload(add(add(sigData, 0x1), 69))
         }
         td.id = Endian.reverse64(id);
         td.ts = Endian.reverse32(ts);
