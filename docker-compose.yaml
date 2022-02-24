@@ -60,7 +60,7 @@ services:
 
   # BSC testnet
   teleport-reporter1-bsc-testnet:
-    command: "node reporter-eth.js 17001984"
+    command: "node reporter-eth.js"
     restart: always
     build:
       context: .
@@ -69,7 +69,7 @@ services:
     volumes:
       - ./oracle/config/bsct-config1.js:/home/node/app/reporter/config.js
   teleport-reporter2-bsc-testnet:
-    command: "node reporter-eth.js 17001984"
+    command: "node reporter-eth.js"
     restart: always
     build:
       context: .
@@ -78,7 +78,7 @@ services:
     volumes:
       - ./oracle/config/bsct-config2.js:/home/node/app/reporter/config.js
   teleport-reporter3-bsc-testnet:
-    command: "node reporter-eth.js 17001984"
+    command: "node reporter-eth.js"
     restart: always
     build:
       context: .
