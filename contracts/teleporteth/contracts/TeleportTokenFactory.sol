@@ -12,8 +12,7 @@ contract TeleportTokenFactory is Owned, Oracled {
     uint256 public creationFee = 0.01 ether;
 
     // Payable constructor can receive Ether
-    constructor() payable {
-    }
+    constructor() payable {}
 
     // Function to deposit Ether into this contract.
     // Call this function along with some Ether.
@@ -25,9 +24,9 @@ contract TeleportTokenFactory is Owned, Oracled {
     function notPayable() public {}
 
     // Function to withdraw all Ether from this contract.
-    function withdraw() onlyOwner public {
+    function withdraw() public onlyOwner {
         // get the amount of Ether stored in this contract
-        uint amount = address(this).balance;
+        uint256 amount = address(this).balance;
 
         // send all Ether to owner
         // Owner can receive Ether since the address of owner is payable
@@ -41,7 +40,7 @@ contract TeleportTokenFactory is Owned, Oracled {
     // Fallback function is called when msg.data is not empty
     fallback() external payable {}
 
-    function getBalance() public view returns (uint) {
+    function getBalance() public view returns (uint256) {
         return address(this).balance;
     }
 
@@ -64,8 +63,8 @@ contract TeleportTokenFactory is Owned, Oracled {
             _thisChainId
         );
 
-        uint oraclesLength = oraclesArr.length;
-        for (uint i = 0; i < oraclesLength; i++) {
+        uint256 oraclesLength = oraclesArr.length;
+        for (uint256 i = 0; i < oraclesLength; i++) {
             tt.regOracle(oraclesArr[i]);
         }
         tt.transferOwnership(msg.sender);
@@ -76,19 +75,14 @@ contract TeleportTokenFactory is Owned, Oracled {
     function getTokenAddress(uint256 _index)
         public
         view
-        returns (
-            address ttAddress
-        )
+        returns (address ttAddress)
     {
         TeleportToken tt = teleporttokens[_index];
 
-        return (
-            address(tt)
-        );
+        return (address(tt));
     }
 
     function setFee(uint256 _fee) public onlyOwner {
         creationFee = _fee;
     }
-
 }
