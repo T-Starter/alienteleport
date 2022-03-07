@@ -5,6 +5,7 @@ pragma solidity ^0.8.6;
 pragma experimental ABIEncoderV2;
 
 // import "hardhat/console.sol";
+import "./TeleportTokenFactory.sol";
 
 contract Verify {
     function recoverSigner(bytes32 message, bytes memory sig)
@@ -172,66 +173,12 @@ abstract contract ApproveAndCallFallBack {
 }
 
 // ----------------------------------------------------------------------------
-// Owned contract
-// ----------------------------------------------------------------------------
-contract Owned {
-    address public owner;
-    address public newOwner;
-
-    event OwnershipTransferred(address indexed _from, address indexed _to);
-
-    constructor() {
-        owner = msg.sender;
-    }
-
-    modifier onlyOwner() {
-        require(msg.sender == owner);
-        _;
-    }
-
-    function transferOwnership(address _newOwner) public onlyOwner {
-        newOwner = _newOwner;
-    }
-
-    function acceptOwnership() public {
-        require(msg.sender == newOwner);
-        emit OwnershipTransferred(owner, newOwner);
-        owner = newOwner;
-        newOwner = address(0);
-    }
-}
-
-contract Oracled is Owned {
-    mapping(address => bool) public oracles;
-    address[] internal oraclesArr;
-
-    modifier onlyOracle() {
-        require(
-            oracles[msg.sender] == true,
-            "Account is not a registered oracle"
-        );
-
-        _;
-    }
-
-    function regOracle(address _newOracle) public onlyOwner {
-        require(!oracles[_newOracle], "Oracle is already registered");
-        oraclesArr.push(_newOracle);
-        oracles[_newOracle] = true;
-    }
-
-    function unregOracle(address _remOracle) public onlyOwner {
-        require(oracles[_remOracle] == true, "Oracle is not registered");
-
-        delete oracles[_remOracle];
-    }
-}
-
-// ----------------------------------------------------------------------------
 // ERC20 Token, with the addition of symbol, name and decimals and an
 // initial fixed supply, added teleport method
 // ----------------------------------------------------------------------------
-contract TeleportToken is ERC20Interface, Owned, Oracled, Verify {
+contract TeleportToken is ERC20Interface, Owned, Verify {
+    TeleportTokenFactory factory;
+
     using SafeMath for uint256;
 
     string public symbol;
@@ -240,6 +187,7 @@ contract TeleportToken is ERC20Interface, Owned, Oracled, Verify {
     uint256 public _totalSupply;
     uint8 public threshold;
     uint8 public thisChainId;
+    address public factoryAddress;
 
     mapping(address => uint256) balances;
     mapping(address => mapping(address => uint256)) allowed;
@@ -275,7 +223,8 @@ contract TeleportToken is ERC20Interface, Owned, Oracled, Verify {
         uint8 _decimals,
         uint256 __totalSupply,
         uint8 _threshold,
-        uint8 _thisChainId
+        uint8 _thisChainId,
+        address payable _factoryAddress
     ) {
         symbol = _symbol;
         name = _name;
@@ -284,8 +233,7 @@ contract TeleportToken is ERC20Interface, Owned, Oracled, Verify {
         balances[address(0)] = _totalSupply;
         threshold = _threshold;
         thisChainId = _thisChainId;
-
-        // TODO Get the oracles from factory instead of hardcoding. https://ethereum.stackexchange.com/questions/45277/calling-one-contract-to-another-contract-method
+        factory = TeleportTokenFactory(_factoryAddress);
     }
 
     // ------------------------------------------------------------------------
@@ -514,7 +462,7 @@ contract TeleportToken is ERC20Interface, Owned, Oracled, Verify {
             // console.log(oracles[potential]);
             // console.log(!signed[td.id][potential]);
             // Check that they are an oracle and they haven't signed twice
-            if (oracles[potential] && !signed[td.id][potential]) {
+            if (factory.isOracle(potential) && !signed[td.id][potential]) {
                 signed[td.id][potential] = true;
                 numberSigs++;
 
@@ -562,6 +510,21 @@ contract TeleportToken is ERC20Interface, Owned, Oracled, Verify {
         if (newChainId > 0) {
             require(newChainId <= 100, "ChainID is too big");
             thisChainId = newChainId;
+
+            return true;
+        }
+
+        return false;
+    }
+
+    function setFactory(address newFactoryAddress)
+        public
+        onlyOwner
+        returns (bool success)
+    {
+        if (newFactoryAddress != address(0)) {
+            factoryAddress = newFactoryAddress;
+            // factory = TeleportTokenFactory(factoryAddress);
 
             return true;
         }

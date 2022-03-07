@@ -7,12 +7,72 @@ pragma experimental ABIEncoderV2;
 // import "hardhat/console.sol";
 import "./TeleportToken.sol";
 
+// ----------------------------------------------------------------------------
+// Owned contract
+// ----------------------------------------------------------------------------
+contract Owned {
+    address public owner;
+    address public newOwner;
+
+    event OwnershipTransferred(address indexed _from, address indexed _to);
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == owner);
+        _;
+    }
+
+    function transferOwnership(address _newOwner) public onlyOwner {
+        newOwner = _newOwner;
+    }
+
+    function acceptOwnership() public {
+        require(msg.sender == newOwner);
+        emit OwnershipTransferred(owner, newOwner);
+        owner = newOwner;
+        newOwner = address(0);
+    }
+}
+
+contract Oracled is Owned {
+    mapping(address => bool) public oracles;
+    address[] internal oraclesArr;
+
+    modifier onlyOracle() {
+        require(
+            oracles[msg.sender] == true,
+            "Account is not a registered oracle"
+        );
+
+        _;
+    }
+
+    function regOracle(address _newOracle) public onlyOwner {
+        require(!oracles[_newOracle], "Oracle is already registered");
+        oraclesArr.push(_newOracle);
+        oracles[_newOracle] = true;
+    }
+
+    function unregOracle(address _remOracle) public onlyOwner {
+        require(oracles[_remOracle] == true, "Oracle is not registered");
+
+        delete oracles[_remOracle];
+    }
+}
+
 contract TeleportTokenFactory is Owned, Oracled {
     TeleportToken[] public teleporttokens;
     uint256 public creationFee = 0.01 ether;
 
     // Payable constructor can receive Ether
     constructor() payable {}
+
+    function isOracle(address _address) public view returns (bool) {
+        return oracles[_address];
+    }
 
     // Function to deposit Ether into this contract.
     // Call this function along with some Ether.
@@ -60,13 +120,15 @@ contract TeleportTokenFactory is Owned, Oracled {
             _decimals,
             __totalSupply,
             _threshold,
-            _thisChainId
+            _thisChainId,
+            payable(address(this))
         );
 
-        uint256 oraclesLength = oraclesArr.length;
-        for (uint256 i = 0; i < oraclesLength; i++) {
-            tt.regOracle(oraclesArr[i]);
-        }
+        // uint256 oraclesLength = oraclesArr.length;
+        // for (uint256 i = 0; i < oraclesLength; i++) {
+        //     tt.regOracle(oraclesArr[i]);
+        // }
+        // tt.setFactory(address(this));
         tt.transferOwnership(msg.sender);
 
         teleporttokens.push(tt);
