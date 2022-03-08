@@ -80,7 +80,7 @@ describe("TeleportTokenFactory", function () {
         teleporttokenfactory = await TeleportTokenFactory.deploy();
         await teleporttokenfactory.connect(owner).deployed({ from: owner.address });
         // teleporttokenfactory = await TeleportTokenFactory.attach("0x24DE774a0685497fe8A5908Ef2F352C5bA14223C");
-        console.log(teleporttokenfactory.address);
+        // console.log("factory: ", teleporttokenfactory.address);
         // console.log(owner.address);
         // console.log(await teleporttokenfactory.owner());
     });
@@ -153,7 +153,7 @@ describe("TeleportTokenFactory", function () {
         );
     });
 
-    it("Can claim another token", async function () {
+    it("Can claim token", async function () {
         let threw = false;
         try {
             let sigData =

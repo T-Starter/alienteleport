@@ -4,7 +4,7 @@ pragma solidity ^0.8.6;
  */
 pragma experimental ABIEncoderV2;
 
-// import "hardhat/console.sol";
+import "hardhat/console.sol";
 import "./TeleportTokenFactory.sol";
 
 contract Verify {
@@ -187,7 +187,6 @@ contract TeleportToken is ERC20Interface, Owned, Verify {
     uint256 public _totalSupply;
     uint8 public threshold;
     uint8 public thisChainId;
-    address public factoryAddress;
 
     mapping(address => uint256) balances;
     mapping(address => mapping(address => uint256)) allowed;
@@ -223,8 +222,7 @@ contract TeleportToken is ERC20Interface, Owned, Verify {
         uint8 _decimals,
         uint256 __totalSupply,
         uint8 _threshold,
-        uint8 _thisChainId,
-        address payable _factoryAddress
+        uint8 _thisChainId
     ) {
         symbol = _symbol;
         name = _name;
@@ -233,7 +231,7 @@ contract TeleportToken is ERC20Interface, Owned, Verify {
         balances[address(0)] = _totalSupply;
         threshold = _threshold;
         thisChainId = _thisChainId;
-        factory = TeleportTokenFactory(_factoryAddress);
+        factory = TeleportTokenFactory(payable(address(msg.sender)));
     }
 
     // ------------------------------------------------------------------------
@@ -510,21 +508,6 @@ contract TeleportToken is ERC20Interface, Owned, Verify {
         if (newChainId > 0) {
             require(newChainId <= 100, "ChainID is too big");
             thisChainId = newChainId;
-
-            return true;
-        }
-
-        return false;
-    }
-
-    function setFactory(address newFactoryAddress)
-        public
-        onlyOwner
-        returns (bool success)
-    {
-        if (newFactoryAddress != address(0)) {
-            factoryAddress = newFactoryAddress;
-            // factory = TeleportTokenFactory(factoryAddress);
 
             return true;
         }

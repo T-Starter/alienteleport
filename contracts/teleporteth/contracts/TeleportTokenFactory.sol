@@ -120,8 +120,7 @@ contract TeleportTokenFactory is Owned, Oracled {
             _decimals,
             __totalSupply,
             _threshold,
-            _thisChainId,
-            payable(address(this))
+            _thisChainId
         );
 
         // uint256 oraclesLength = oraclesArr.length;
