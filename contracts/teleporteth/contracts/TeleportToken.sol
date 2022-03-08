@@ -4,7 +4,7 @@ pragma solidity ^0.8.6;
  */
 pragma experimental ABIEncoderV2;
 
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
 import "./TeleportTokenFactory.sol";
 
 contract Verify {
