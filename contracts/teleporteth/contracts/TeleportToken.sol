@@ -458,7 +458,6 @@ contract TeleportToken is ERC20Interface, Owned, Verify {
 
             // console.log(potential);
             // console.log(oracles[potential]);
-            // console.log(!signed[td.id][potential]);
             // Check that they are an oracle and they haven't signed twice
             if (factory.isOracle(potential) && !signed[td.id][potential]) {
                 signed[td.id][potential] = true;

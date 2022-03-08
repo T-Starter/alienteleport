@@ -123,11 +123,6 @@ contract TeleportTokenFactory is Owned, Oracled {
             _thisChainId
         );
 
-        // uint256 oraclesLength = oraclesArr.length;
-        // for (uint256 i = 0; i < oraclesLength; i++) {
-        //     tt.regOracle(oraclesArr[i]);
-        // }
-        // tt.setFactory(address(this));
         tt.transferOwnership(msg.sender);
 
         teleporttokens.push(tt);
