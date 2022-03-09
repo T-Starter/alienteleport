@@ -1,69 +1,69 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
-describe("TeleportToken", function () {
-    let TeleportToken;
-    let teleporttoken;
+// describe("TeleportToken", function () {
+//     let TeleportToken;
+//     let teleporttoken;
 
-    before(async function () {
-        // Deploy contract
-        TeleportToken = await ethers.getContractFactory("TeleportToken");
-        teleporttoken = await TeleportToken.deploy(
-            "START",
-            "T-starter START",
-            4,
-            1000000000000,
-            2,
-            3
-        );
-        await teleporttoken.deployed();
-        // teleporttoken = await TeleportToken.attach("0xde2EEea2a7F9E9489C01aaF0530afd08Cfae45a7");
-        console.log(teleporttoken.address);
-    });
+//     before(async function () {
+//         // Deploy contract
+//         TeleportToken = await ethers.getContractFactory("TeleportToken");
+//         teleporttoken = await TeleportToken.deploy(
+//             "START",
+//             "T-starter START",
+//             4,
+//             1000000000000,
+//             2,
+//             3
+//         );
+//         await teleporttoken.deployed();
+//         // teleporttoken = await TeleportToken.attach("0xde2EEea2a7F9E9489C01aaF0530afd08Cfae45a7");
+//         console.log(teleporttoken.address);
+//     });
 
-    it("Oracle is registered", async function () {
-        // Register oracles
-        await teleporttoken.regOracle("0x59023f49315113deb856106d05699a3a2dc78bb8");
-        let isOracle = await teleporttoken.oracles(
-            "0x59023f49315113deb856106d05699a3a2dc78bb8"
-        );
-        expect(isOracle).to.be.true;
-        await teleporttoken.regOracle("0xbc25948d1dd62a5777ab33ffe3cc0e61107043be");
-        isOracle = await teleporttoken.oracles(
-            "0xbc25948d1dd62a5777ab33ffe3cc0e61107043be"
-        );
-        expect(isOracle).to.be.true;
-        await teleporttoken.regOracle("0xfb18e6e108987aeb4f5f2b17a2b18790ffa8ba8b");
-        isOracle = await teleporttoken.oracles(
-            "0xfb18e6e108987aeb4f5f2b17a2b18790ffa8ba8b"
-        );
-        expect(isOracle).to.be.true;
-    });
+//     it("Oracle is registered", async function () {
+//         // Register oracles
+//         await teleporttoken.regOracle("0x59023f49315113deb856106d05699a3a2dc78bb8");
+//         let isOracle = await teleporttoken.oracles(
+//             "0x59023f49315113deb856106d05699a3a2dc78bb8"
+//         );
+//         expect(isOracle).to.be.true;
+//         await teleporttoken.regOracle("0xbc25948d1dd62a5777ab33ffe3cc0e61107043be");
+//         isOracle = await teleporttoken.oracles(
+//             "0xbc25948d1dd62a5777ab33ffe3cc0e61107043be"
+//         );
+//         expect(isOracle).to.be.true;
+//         await teleporttoken.regOracle("0xfb18e6e108987aeb4f5f2b17a2b18790ffa8ba8b");
+//         isOracle = await teleporttoken.oracles(
+//             "0xfb18e6e108987aeb4f5f2b17a2b18790ffa8ba8b"
+//         );
+//         expect(isOracle).to.be.true;
+//     });
 
-    it("Threshold is updated", async function () {
-        // update threshold to one
-        await teleporttoken.updateThreshold(1);
-        let threshold = await teleporttoken.threshold();
-        expect(threshold).to.be.equal(1);
-    });
+//     it("Threshold is updated", async function () {
+//         // update threshold to one
+//         await teleporttoken.updateThreshold(1);
+//         let threshold = await teleporttoken.threshold();
+//         expect(threshold).to.be.equal(1);
+//     });
 
-    it("Can claim", async function () {
-        let threw = false;
-        try {
-            let sigData =
-                "0x04010000000000008ff3146290d5cc5865ffbf5e40420f00000000000444455749450000021226b0ab0963ddf1aff3d545ff5849af2b2d84f9c500000000000000000000000000";
-            let signatures = [
-                "0xa9dd8299f6c84401536a0510a4f970669b9113eea7b2ce0ddb284567127d91be11b5d6c43eae735efa09d896241b80ab2f2f2379baec287c6424da14b2a413af1c",
-                "0xa8fae3188f92292a772deb26721e79d76c004d260a1bd218ba8de80f9ef327a85806d4640d704d12a7c47fc4fe90040eeb4c611a09b58c15f6b5314c47c7e91e1c",
-            ];
-            await teleporttoken.claim(sigData, signatures);
-        } catch (error) {
-            threw = true;
-            console.log(error);
-        }
-        expect(threw).to.be.false;
-    });
-});
+//     it("Can claim", async function () {
+//         let threw = false;
+//         try {
+//             let sigData =
+//                 "0x04010000000000008ff3146290d5cc5865ffbf5e40420f00000000000444455749450000021226b0ab0963ddf1aff3d545ff5849af2b2d84f9c500000000000000000000000000";
+//             let signatures = [
+//                 "0xa9dd8299f6c84401536a0510a4f970669b9113eea7b2ce0ddb284567127d91be11b5d6c43eae735efa09d896241b80ab2f2f2379baec287c6424da14b2a413af1c",
+//                 "0xa8fae3188f92292a772deb26721e79d76c004d260a1bd218ba8de80f9ef327a85806d4640d704d12a7c47fc4fe90040eeb4c611a09b58c15f6b5314c47c7e91e1c",
+//             ];
+//             await teleporttoken.claim(sigData, signatures);
+//         } catch (error) {
+//             threw = true;
+//             console.log(error);
+//         }
+//         expect(threw).to.be.false;
+//     });
+// });
 
 describe("TeleportTokenFactory", function () {
     let TeleportTokenFactory;
@@ -80,7 +80,7 @@ describe("TeleportTokenFactory", function () {
         teleporttokenfactory = await TeleportTokenFactory.deploy();
         await teleporttokenfactory.connect(owner).deployed({ from: owner.address });
         // teleporttokenfactory = await TeleportTokenFactory.attach("0x24DE774a0685497fe8A5908Ef2F352C5bA14223C");
-        console.log(teleporttokenfactory.address);
+        // console.log("factory: ", teleporttokenfactory.address);
         // console.log(owner.address);
         // console.log(await teleporttokenfactory.owner());
     });
@@ -129,18 +129,18 @@ describe("TeleportTokenFactory", function () {
         expect(contractOwner).to.be.equal(addr1.address);
     });
 
-    it("Oracles already registered", async function () {
-        // register oracles
-        // await newToken
-        //   .connect(addr1)
-        //   .regOracle("0x59023f49315113deb856106d05699a3a2dc78bb8", {
-        //     from: addr1.address,
-        //   });
-        let isOracle = await newToken.oracles(
-            "0x59023f49315113deb856106d05699a3a2dc78bb8"
-        );
-        expect(isOracle).to.be.true;
-    });
+    // it("Oracles already registered", async function () {
+    //     // register oracles
+    //     // await newToken
+    //     //   .connect(addr1)
+    //     //   .regOracle("0x59023f49315113deb856106d05699a3a2dc78bb8", {
+    //     //     from: addr1.address,
+    //     //   });
+    //     let isOracle = await newToken.oracles(
+    //         "0x59023f49315113deb856106d05699a3a2dc78bb8"
+    //     );
+    //     expect(isOracle).to.be.true;
+    // });
 
     it("Set factory fee", async function () {
         let receipt = await teleporttokenfactory
@@ -153,7 +153,7 @@ describe("TeleportTokenFactory", function () {
         );
     });
 
-    it("Can claim another token", async function () {
+    it("Can claim token", async function () {
         let threw = false;
         try {
             let sigData =
