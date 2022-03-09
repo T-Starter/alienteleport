@@ -62,7 +62,6 @@ module.exports = {
             provider: _ => getProvider(),
             gasPrice: GAS_PRICE,
             confirmations: CONFIRMATIONS,
-            websockets: true
         },
         xDai: {
             gas: GAS_LIMIT,

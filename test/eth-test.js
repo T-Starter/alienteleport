@@ -68,12 +68,12 @@ const { ethers } = require("hardhat");
 describe("TeleportTokenFactory", function () {
     let TeleportTokenFactory;
     let teleporttokenfactory;
-    let owner, addr1, newowner, addr2;
+    let owner, addr1, newowner;
     let newToken;
 
     before(async function () {
         // Deploy contract
-        [owner, addr1, newowner, addr2] = await ethers.getSigners();
+        [owner, addr1, newowner] = await ethers.getSigners();
         TeleportTokenFactory = await ethers.getContractFactory(
             "TeleportTokenFactory"
         );
@@ -129,18 +129,18 @@ describe("TeleportTokenFactory", function () {
         expect(contractOwner).to.be.equal(addr1.address);
     });
 
-    it("Oracles already registered", async function () {
-        // register oracles
-        // await newToken
-        //   .connect(addr1)
-        //   .regOracle("0x59023f49315113deb856106d05699a3a2dc78bb8", {
-        //     from: addr1.address,
-        //   });
-        let isOracle = await newToken.oracles(
-            "0x59023f49315113deb856106d05699a3a2dc78bb8"
-        );
-        expect(isOracle).to.be.true;
-    });
+    // it("Oracles already registered", async function () {
+    //     // register oracles
+    //     // await newToken
+    //     //   .connect(addr1)
+    //     //   .regOracle("0x59023f49315113deb856106d05699a3a2dc78bb8", {
+    //     //     from: addr1.address,
+    //     //   });
+    //     let isOracle = await newToken.oracles(
+    //         "0x59023f49315113deb856106d05699a3a2dc78bb8"
+    //     );
+    //     expect(isOracle).to.be.true;
+    // });
 
     it("Set factory fee", async function () {
         let receipt = await teleporttokenfactory
@@ -189,14 +189,6 @@ describe("TeleportTokenFactory", function () {
         expect(threw).to.be.false;
     });
 
-    it("Add oracle as factory owner", async function () {
-        await newToken.connect(owner).regOracle("0x26b0Ab0963dDf1AFf3D545FF5849af2b2D84F9C5");
-        let isOracle = await newToken.connect(owner).oracles(
-            "0x26b0Ab0963dDf1AFf3D545FF5849af2b2D84F9C5"
-        );
-        expect(isOracle).to.be.true;
-    })
-
     it("Transfer factory ownership", async function () {
         let receipt = await teleporttokenfactory
             .connect(owner)
@@ -208,14 +200,4 @@ describe("TeleportTokenFactory", function () {
 
         expect(await teleporttokenfactory.owner()).to.be.equal(newowner.address);
     });
-
-    it("Add oracle as new factory owner", async function () {
-        await newToken.connect(owner).setFactoryOwner(newowner.address);
-        await newToken.connect(newowner).regOracle("0x49DA5773000D0a3AD19F481DD1218f72CcdA4dd7");
-        let isOracle = await newToken.connect(newowner).oracles(
-            "0x49DA5773000D0a3AD19F481DD1218f72CcdA4dd7"
-        );
-        expect(isOracle).to.be.true;
-    })
-
 });
