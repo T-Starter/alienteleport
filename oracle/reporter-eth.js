@@ -355,7 +355,7 @@ const run = async (from_block = 'latest') => {
 
             if (from_block >= latest_block) {
                 console.log(`Up to date at block ${to_block}`);
-                await sleep(10000);
+                await sleep(POLL_INTERVAL);
             }
             console.log(`Getting events from block ${from_block} to ${to_block}`)
 
