@@ -113,7 +113,7 @@ const process_logs = async (from_block, to_block) => {
             };
             // console.log(query);
             const res = await provider.getLogs(query);
-            console.log(res);
+            // console.log(res);
             if (res.length) {
                 let teleport_events = res.filter((log) => {
                     return log.topics[0] === teleport_topic;
