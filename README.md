@@ -7,6 +7,16 @@ Contracts and tools to create a bridge between WAX tokens and an ERC-20 counterp
 There are contracts available for both EOSIO chains and Ethereum, both should be deployed
 on their respective chains.
 
+**Mainnet**
+Ethereum:
+BSC:
+Telos EVM:
+
+**Testnet Factory**
+Ethereum: 0x442c8ECfF7edc220DF84fDf934049593BeA2e077
+BSC: 0x442c8ECfF7edc220DF84fDf934049593BeA2e077
+Telos EVM: 0x7e056730ba88f9017b667d85bd5131fecb8c6a7b
+
 ### Deployment guide
 
 After cloning the repository, first install the dependencies:
