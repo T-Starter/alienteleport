@@ -117,11 +117,11 @@ const run = async () => {
                     // Backwards compatibility with v1
                     // ==============================
                     const token = tokensList.find(token => token.token.contract == teleport.token_contract);
-                    let remoteContractAddress = token.remote_contracts.find(t => t.key == config.chainId).value.toLowerCase()
+                    let remoteContractAddress = new Set(token.remote_contracts.map(c => c.value.toLowerCase()))
                     let data_buf = "";
                     if (
                         v1TokenList.some(
-                            (addr) => addr.toLowerCase() == remoteContractAddress.toLowerCase()
+                            (addr) => addr.toLowerCase() == remoteContractAddress.has(addr.toLowerCase())
                         )
                     ) {
                         data_buf = Buffer.from(sb.array.slice(0, 69));
