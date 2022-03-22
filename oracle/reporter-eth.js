@@ -14,7 +14,6 @@ const { JsSignatureProvider } = require('eosjs/dist/eosjs-jssig');
 const fetch = require('node-fetch');
 const fs = require('fs');
 const ethers = require('ethers');
-const { lte } = require('ramda');
 
 const config = require(process.env['CONFIG'] || './config');
 
@@ -264,7 +263,7 @@ const process_teleported = async (events) => {
                         continue;
                     }
 
-                    console.log(events[r], data, data[1].toString())
+                    // console.log(events[r], data, data[1].toString())
                     const amountBN = data[1];
                     if (amountBN.lte(0)) {
                         // console.error(data);

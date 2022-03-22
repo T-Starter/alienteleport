@@ -70,6 +70,7 @@ describe("TeleportTokenFactory", function () {
     let teleporttokenfactory;
     let owner, addr1, newowner;
     let newToken;
+    let wrongSymbolToken;
 
     before(async function () {
         // Deploy contract
@@ -121,6 +122,17 @@ describe("TeleportTokenFactory", function () {
         // console.log(balance.toString());
         // expect(isOracle).to.be.true;
         // console.log(isOracle);
+
+        let receipt2 = await teleporttokenfactory
+            .connect(addr1)
+            .create("TSQRL", "TSquirrels", 18, "100000000000000000000000", 1, 3, {
+                from: addr1.address,
+                value: ethers.utils.parseEther("0.01"),
+            });
+        let tokenAddress2 = await teleporttokenfactory.getTokenAddress(1);
+        const TT2 = await ethers.getContractFactory("TeleportToken");
+        wrongSymbolToken = await TT2.attach(tokenAddress2);
+
     });
 
     it("Has correct ownership", async function () {
@@ -163,6 +175,23 @@ describe("TeleportTokenFactory", function () {
                 "0xcacafc23521522dab523545acf9afd22a8e3f0c01dafe5f05e3f257883e1ca240f3fa3e783175c0dafda4290c63e3a4b004c1c11465ffac59e3d8569fc3436691c",
             ];
             await newToken.claim(sigData, signatures);
+        } catch (error) {
+            threw = true;
+            console.log(error);
+        }
+        expect(threw).to.be.false;
+    });
+
+    it("Can't claim different token (symbols test)", async function () {
+        let threw = false;
+        try {
+            let sigData =
+                "0x3601000000000000f763396290d5cc5865ffbf5e102700000000000004424f4f4d00000003fb81bc1a4a2d82f8bf0496abae8f1fe1e1be61450000000000000000000000000400";
+            let signatures = [
+                "0x637eb8a8a5abac9386c09e5cbff0cc15084b865832c7242ce74af1fce2ab55a41a5d97045aa653543c38dd7bb2f1cbea5217c4fe94af204e3bc1c75aba1e4db61b",
+                "0xd5e06b73b47e3d0932e9f2247d4a5073e0a0e04d8dc76699cddfb20e36eb334f5e3a0fe85af76b78308e43bea03b7ad538dcdb3719749cb0b9b97c6a824d12fa1c",
+            ];
+            await wrongSymbolToken.claim(sigData, signatures);
         } catch (error) {
             threw = true;
             console.log(error);

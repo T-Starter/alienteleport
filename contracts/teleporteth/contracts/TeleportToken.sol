@@ -368,20 +368,20 @@ contract TeleportToken is ERC20Interface, Owned, Verify {
     // Claim tokens sent using signatures supplied to the other chain
     // ------------------------------------------------------------------------
 
-    function stringToBytes32(string memory source)
-        public
-        pure
-        returns (bytes32 result)
-    {
-        bytes memory tempEmptyStringTest = bytes(source);
-        if (tempEmptyStringTest.length == 0) {
-            return 0x0;
-        }
+    // function stringToBytes32(string memory source)
+    //     public
+    //     pure
+    //     returns (bytes32 result)
+    // {
+    //     bytes memory tempEmptyStringTest = bytes(source);
+    //     if (tempEmptyStringTest.length == 0) {
+    //         return 0x0;
+    //     }
 
-        assembly {
-            result := mload(add(source, 32))
-        }
-    }
+    //     assembly {
+    //         result := mload(add(source, 32))
+    //     }
+    // }
 
     function verifySigData(bytes memory sigData)
         private
@@ -396,7 +396,7 @@ contract TeleportToken is ERC20Interface, Owned, Verify {
         uint64 symbolRaw;
         uint8 chainId;
         address toAddress;
-        uint64 requiredSymbolRaw;
+        // uint64 requiredSymbolRaw;
         uint8 nativeDecimals;
 
         assembly {
@@ -420,10 +420,10 @@ contract TeleportToken is ERC20Interface, Owned, Verify {
             Endian.reverse64(quantity) *
             10**(decimals - nativeDecimals);
 
-        requiredSymbolRaw = uint64(
-            bytes8(stringToBytes32(TeleportToken.symbol))
-        );
-        require(requiredSymbolRaw == symbolRaw - td.chainId, "Wrong symbol");
+        // requiredSymbolRaw = uint64(
+        //     bytes8(stringToBytes32(TeleportToken.symbol))
+        // );
+        // require(requiredSymbolRaw == symbolRaw - td.chainId, "Wrong symbol");
         require(thisChainId == td.chainId, "Invalid Chain ID");
         require(
             block.timestamp < SafeMath.add(td.ts, (60 * 60 * 24 * 30)),
