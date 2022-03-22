@@ -14,6 +14,7 @@ const { JsSignatureProvider } = require('eosjs/dist/eosjs-jssig');
 const fetch = require('node-fetch');
 const fs = require('fs');
 const ethers = require('ethers');
+const { lte } = require('ramda');
 
 const config = require(process.env['CONFIG'] || './config');
 
@@ -177,7 +178,7 @@ const process_claimed = async (events) => {
                     const id = data[0].toNumber();
                     const to_eth = data[1].replace('0x', '') + '000000000000000000000000';
                     const ethAmount = parseFloat(ethers.utils.formatUnits(data[2].toString(), remoteContractPrecision)).toFixed(tokenNativePrecision);
-                    const quantity = ethAmount + ' ' + tokenSymbol;
+                    const quantity = `${ethAmount} ${tokenSymbol}`;
                     const actions = [];
                     actions.push({
                         account: config.eos.teleportContract,
@@ -263,18 +264,25 @@ const process_teleported = async (events) => {
                         continue;
                     }
 
-                    // console.log(events[r], data, data[1].toString())
-
-                    const tokens = data[1].toNumber();
-                    if (tokens <= 0) {
+                    console.log(events[r], data, data[1].toString())
+                    const amountBN = data[1];
+                    if (amountBN.lte(0)) {
                         // console.error(data);
                         console.error('Tokens are less than or equal to 0');
                         continue;
                     }
+
+                    // get remote contract decimals
+                    let remoteContractAddres = events[r].address.toLowerCase()
+                    const erc20 = new ethers.Contract(remoteContractAddres, tokenABI, provider);
+                    let remoteContractPrecision = await erc20.decimals();
+
                     const to = data[0];
                     const from_chain_id = config.chainId;
                     const to_chain_id = data[2].toNumber();
-                    const amount = (tokens / Math.pow(10, tokenNativePrecision)).toFixed(tokenNativePrecision);
+                    const amount = parseFloat(
+                        ethers.utils.formatUnits(amountBN, remoteContractPrecision)
+                    ).toFixed(tokenNativePrecision);
                     const quantity = `${amount} ${tokenSymbol}`
                     const txid = events[r].transactionHash.replace(/^0x/, '');
 
