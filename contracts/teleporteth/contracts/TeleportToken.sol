@@ -200,7 +200,12 @@ contract TeleportToken is ERC20Interface, Owned, Verify {
         uint256 tokens,
         uint256 chainId
     );
-    event Claimed(uint64 id, address to, uint256 tokens);
+    event Claimed(
+        uint64 id,
+        address toAddress,
+        address tokenAddress,
+        uint256 amount
+    );
 
     struct TeleportData {
         uint64 id;
@@ -210,6 +215,7 @@ contract TeleportToken is ERC20Interface, Owned, Verify {
         uint64 symbolRaw;
         uint8 chainId;
         address toAddress;
+        address tokenAddress;
         uint8 nativeDecimals;
     }
 
@@ -368,20 +374,20 @@ contract TeleportToken is ERC20Interface, Owned, Verify {
     // Claim tokens sent using signatures supplied to the other chain
     // ------------------------------------------------------------------------
 
-    // function stringToBytes32(string memory source)
-    //     public
-    //     pure
-    //     returns (bytes32 result)
-    // {
-    //     bytes memory tempEmptyStringTest = bytes(source);
-    //     if (tempEmptyStringTest.length == 0) {
-    //         return 0x0;
-    //     }
+    function stringToBytes32(string memory source)
+        public
+        pure
+        returns (bytes32 result)
+    {
+        bytes memory tempEmptyStringTest = bytes(source);
+        if (tempEmptyStringTest.length == 0) {
+            return 0x0;
+        }
 
-    //     assembly {
-    //         result := mload(add(source, 32))
-    //     }
-    // }
+        assembly {
+            result := mload(add(source, 32))
+        }
+    }
 
     function verifySigData(bytes memory sigData)
         private
@@ -397,7 +403,10 @@ contract TeleportToken is ERC20Interface, Owned, Verify {
         uint8 chainId;
         address toAddress;
         // uint64 requiredSymbolRaw;
+        address tokenAddress;
         uint8 nativeDecimals;
+
+        console.logBytes(sigData);
 
         assembly {
             id := mload(add(add(sigData, 0x8), 0))
@@ -407,7 +416,8 @@ contract TeleportToken is ERC20Interface, Owned, Verify {
             symbolRaw := mload(add(add(sigData, 0x8), 29))
             chainId := mload(add(add(sigData, 0x1), 36))
             toAddress := mload(add(add(sigData, 0x14), 37))
-            nativeDecimals := mload(add(add(sigData, 0x1), 69))
+            tokenAddress := mload(add(add(sigData, 0x14), 70))
+            nativeDecimals := mload(add(add(sigData, 0x1), 90))
         }
         td.id = Endian.reverse64(id);
         td.ts = Endian.reverse32(ts);
@@ -415,6 +425,7 @@ contract TeleportToken is ERC20Interface, Owned, Verify {
         td.symbolRaw = Endian.reverse64(symbolRaw);
         td.chainId = chainId;
         td.toAddress = toAddress;
+        td.tokenAddress = tokenAddress;
         td.nativeDecimals = nativeDecimals;
         td.quantity =
             Endian.reverse64(quantity) *
@@ -424,6 +435,7 @@ contract TeleportToken is ERC20Interface, Owned, Verify {
         //     bytes8(stringToBytes32(TeleportToken.symbol))
         // );
         // require(requiredSymbolRaw == symbolRaw - td.chainId, "Wrong symbol");
+        require(address(this) == td.tokenAddress, "Invalid token address");
         require(thisChainId == td.chainId, "Invalid Chain ID");
         require(
             block.timestamp < SafeMath.add(td.ts, (60 * 60 * 24 * 30)),
@@ -443,7 +455,7 @@ contract TeleportToken is ERC20Interface, Owned, Verify {
         TeleportData memory td = verifySigData(sigData);
 
         // verify signatures
-        require(sigData.length == 71, "Signature data is the wrong size");
+        require(sigData.length == 91, "Signature data is the wrong size");
         require(
             signatures.length <= 10,
             "Maximum of 10 signatures can be provided"
@@ -477,7 +489,7 @@ contract TeleportToken is ERC20Interface, Owned, Verify {
         balances[address(0)] = balances[address(0)].sub(td.quantity);
         balances[td.toAddress] = balances[td.toAddress].add(td.quantity);
 
-        emit Claimed(td.id, td.toAddress, td.quantity);
+        emit Claimed(td.id, td.toAddress, td.tokenAddress, td.quantity);
         emit Transfer(address(0), td.toAddress, td.quantity);
 
         return td.toAddress;

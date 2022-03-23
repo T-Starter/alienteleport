@@ -27,7 +27,7 @@ const network = config.network || 'ETH'
 const blocks_file = `.oracle_${config.network}_block-${config.eth.oracleAccount}`;
 const POLL_INTERVAL = config.pollingInterval || 30000;
 const DEFAULT_BLOCKS_TO_WAIT = 5;
-const claimed_topic = '0xf20fc6923b8057dd0c3b606483fcaa038229bb36ebc35a0040e3eaa39cf97b17';
+const claimed_topic = '0x94af4c5d270a63723e4dd7b1ae4a8de3734098f6677d9f170af24fec77603b37';
 const teleport_topic = '0x622824274e0937ee319b036740cd0887131781bc2032b47eac3e88a1be17f5d5';
 
 const tokenABI = [
@@ -162,7 +162,7 @@ const process_claimed = async (events) => {
 
                     let data;
                     if (events[r].topics[0] == claimed_topic) {
-                        data = await ethers.utils.defaultAbiCoder.decode(['uint64', 'address', 'uint'], events[r].data);
+                        data = await ethers.utils.defaultAbiCoder.decode(['uint64', 'address', 'address', 'uint'], events[r].data);
                     } else {
                         continue;
                     }
@@ -176,7 +176,7 @@ const process_claimed = async (events) => {
 
                     const id = data[0].toNumber();
                     const to_eth = data[1].replace('0x', '') + '000000000000000000000000';
-                    const ethAmount = parseFloat(ethers.utils.formatUnits(data[2].toString(), remoteContractPrecision)).toFixed(tokenNativePrecision);
+                    const ethAmount = parseFloat(ethers.utils.formatUnits(data[3].toString(), remoteContractPrecision)).toFixed(tokenNativePrecision);
                     const quantity = `${ethAmount} ${tokenSymbol}`;
                     const actions = [];
                     actions.push({

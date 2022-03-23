@@ -122,10 +122,12 @@ describe("TeleportTokenFactory", function () {
         // console.log(balance.toString());
         // expect(isOracle).to.be.true;
         // console.log(isOracle);
+        console.log("tokenAddress:", tokenAddress);
+        console.log("useraddress:", addr1.address);
 
         let receipt2 = await teleporttokenfactory
             .connect(addr1)
-            .create("TSQRL", "TSquirrels", 18, "100000000000000000000000", 1, 3, {
+            .create("TSQRL", "TSquirrels", 18, "100000000000000000000000", 1, 2, {
                 from: addr1.address,
                 value: ethers.utils.parseEther("0.01"),
             });
@@ -169,10 +171,9 @@ describe("TeleportTokenFactory", function () {
         let threw = false;
         try {
             let sigData =
-                "0x1101000000000000dc2e166290d5cc5865ffbf5e085200000000000004444557494500000226b0ab0963ddf1aff3d545ff5849af2b2d84f9c50000000000000000000000000400";
+                "0x40010000000000008ac83a6290d5cc5865ffbf5e204e000000000000044445574945000003fb81bc1a4a2d82f8bf0496abae8f1fe1e1be614500000000000000000000000000395a6021430e6f724c9e7382cf2693cb3a07bbe604";
             let signatures = [
-                "0xff33facc708d4b03df94b06f70a62ff26e280f0327eebb6ef5bb4559bb23279d493e103576a9e26d574bc539693006e30c1b7f419861095e3e44b8a61984affb1c",
-                "0xcacafc23521522dab523545acf9afd22a8e3f0c01dafe5f05e3f257883e1ca240f3fa3e783175c0dafda4290c63e3a4b004c1c11465ffac59e3d8569fc3436691c",
+                "0x0ba9df8874d3e332619baab7c01189274c4029f1953262f1bf8fcf736fbf64f13b6490e66fd4366f5cb4585b48521bd2be8653d00007cf90e099290db2450a521c",
             ];
             await newToken.claim(sigData, signatures);
         } catch (error) {
@@ -186,17 +187,16 @@ describe("TeleportTokenFactory", function () {
         let threw = false;
         try {
             let sigData =
-                "0x3601000000000000f763396290d5cc5865ffbf5e102700000000000004424f4f4d00000003fb81bc1a4a2d82f8bf0496abae8f1fe1e1be61450000000000000000000000000400";
+                "0x40010000000000008ac83a6290d5cc5865ffbf5e204e000000000000044445574945000003fb81bc1a4a2d82f8bf0496abae8f1fe1e1be614500000000000000000000000000395a6021430e6f724c9e7382cf2693cb3a07bbe604";
             let signatures = [
-                "0x637eb8a8a5abac9386c09e5cbff0cc15084b865832c7242ce74af1fce2ab55a41a5d97045aa653543c38dd7bb2f1cbea5217c4fe94af204e3bc1c75aba1e4db61b",
-                "0xd5e06b73b47e3d0932e9f2247d4a5073e0a0e04d8dc76699cddfb20e36eb334f5e3a0fe85af76b78308e43bea03b7ad538dcdb3719749cb0b9b97c6a824d12fa1c",
+                "0x0ba9df8874d3e332619baab7c01189274c4029f1953262f1bf8fcf736fbf64f13b6490e66fd4366f5cb4585b48521bd2be8653d00007cf90e099290db2450a521c",
             ];
             await wrongSymbolToken.claim(sigData, signatures);
         } catch (error) {
             threw = true;
             console.log(error);
         }
-        expect(threw).to.be.false;
+        expect(threw).to.be.true;
     });
 
     // TODO Test receive and send ether

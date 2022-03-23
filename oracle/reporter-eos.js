@@ -78,16 +78,7 @@ const run = async () => {
             });
 
             // console.log("Teleports: ", rows);
-            const tokensTable = await rpc.get_table_rows({
-                code: config.eos.teleportContract,
-                scope: config.eos.teleportContract,
-                table: "tokens",
-                limit: 1000,
-                reverse: true,
-            });
 
-            let tokensList = tokensTable.rows.filter(token => token.enabled == 1);
-            // console.log(tokensList);
 
             for (const teleport of rows) {
                 if (
@@ -116,23 +107,35 @@ const run = async () => {
 
                     // Backwards compatibility with v1
                     // ==============================
+                    const tokensTable = await rpc.get_table_rows({
+                        code: config.eos.teleportContract,
+                        scope: config.eos.teleportContract,
+                        table: "tokens",
+                        limit: 1000,
+                        reverse: true,
+                    });
+
+                    let tokensList = tokensTable.rows.filter(token => token.enabled == 1);
                     const token = tokensList.find(token => token.token.contract == teleport.token_contract);
-                    let remoteContractAddress = new Set(token.remote_contracts.map(c => c.value.toLowerCase()))
+                    let remoteContractAddress = token.remote_contracts.find(t => t.key == teleport.chain_id).value.toLowerCase()
                     let data_buf = "";
                     if (
                         v1TokenList.some(
-                            (addr) => addr.toLowerCase() == remoteContractAddress.has(addr.toLowerCase())
+                            (addr) => addr.toLowerCase() == remoteContractAddress.toLowerCase()
                         )
                     ) {
+                        console.log("Found v1 token");
                         data_buf = Buffer.from(sb.array.slice(0, 69));
                     } else {
+                        sb.pushArray(fromHexString(remoteContractAddress));
                         sb.push(asToDeci(teleport.quantity));
-                        data_buf = Buffer.from(sb.array.slice(0, 71));
+                        data_buf = Buffer.from(sb.array.slice(0, 91));
                     }
                     // ==========================
+                    console.log("signData:", "0x" + toHexString(sb.array.slice(0, 91)));
 
                     const msg_hash = ethUtil.keccak(data_buf);
-                    // console.log(msg_hash.toString("hex"));
+                    console.log(msg_hash.toString("hex"));
                     // console.log(config.eth.privateKey);
                     const pk = Buffer.from(config.eth.privateKey, "hex");
                     const sig = ethUtil.ecsign(msg_hash, pk);
