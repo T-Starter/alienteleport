@@ -1,6 +1,4 @@
 const {
-    WETH_ADDRESS,
-    TOKENS_TO_SUPPORT,
     REPORTERS
 } = require('../config')
 const { singletons } = require('@openzeppelin/test-helpers')

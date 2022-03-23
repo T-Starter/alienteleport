@@ -167,6 +167,7 @@ describe("TeleportTokenFactory", function () {
         );
     });
 
+    // TODO generate the data and sig
     it("Can claim token", async function () {
         let threw = false;
         try {
@@ -196,7 +197,7 @@ describe("TeleportTokenFactory", function () {
             threw = true;
             console.log(error);
         }
-        expect(threw).to.be.true;
+        expect(threw).to.be.false;
     });
 
     // TODO Test receive and send ether

@@ -13,9 +13,9 @@ BSC:
 Telos EVM:
 
 **Testnet Factory**
-Ethereum: 0x442c8ECfF7edc220DF84fDf934049593BeA2e077
-BSC: 0x442c8ECfF7edc220DF84fDf934049593BeA2e077
-Telos EVM: 0x7e056730ba88f9017b667d85bd5131fecb8c6a7b
+Ethereum: 0x011fDBfd56f0cd3a0a85885FBdE64cc90BB26D0C
+BSC: 0x1252d7fFCD2F3FA75045c9220606D2791b026351
+Telos EVM: 0x1d4375F149FB6821DEB4d00ee02b26958e31D9cF
 
 ### Deployment guide
 
@@ -45,6 +45,8 @@ ethMainnet
 bscMainnet
 bscTestnet
 polygonMaticMainnet
+telosMainnet
+telosTestnet
 ```
 
 Should you need to deploy to a different chain, inspect the existing configurations and make your own with values pertinent to that new chain.
@@ -55,7 +57,7 @@ Finally, to verify the deployed contract run:
 ❍ npx truffle run verify TeleportTokenFactory --network <network>
 ```
 
-To verify the teleport token repeat the above process also editing the deploy_contracts script to deploy and verify the contract
+To verify the teleport token repeat the above process also editing the 2_deploy_contracts script to deploy and verify the contract
 
 ## Tests
 
@@ -95,5 +97,4 @@ Oracles can then call the received function on each contract when they see a tra
 
 ## Stats
 
-Tokenfactory gas cost: 5055124 gas
-Teleport token creation gas cost: 3608530 gas + fee
+Tokenfactory gas cost: 0.025 ETH @ 10 Gwei

@@ -402,11 +402,9 @@ contract TeleportToken is ERC20Interface, Owned, Verify {
         uint64 symbolRaw;
         uint8 chainId;
         address toAddress;
-        // uint64 requiredSymbolRaw;
         address tokenAddress;
         uint8 nativeDecimals;
-
-        console.logBytes(sigData);
+        // uint64 requiredSymbolRaw;
 
         assembly {
             id := mload(add(add(sigData, 0x8), 0))
