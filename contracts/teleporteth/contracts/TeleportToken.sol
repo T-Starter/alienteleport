@@ -5,7 +5,8 @@ pragma solidity ^0.8.6;
 pragma experimental ABIEncoderV2;
 
 // import "hardhat/console.sol";
-import "./TeleportTokenFactory.sol";
+import "./Owner.sol";
+import {TeleportTokenFactory} from "./TeleportTokenFactory.sol";
 
 contract Verify {
     function recoverSigner(bytes32 message, bytes memory sig)
