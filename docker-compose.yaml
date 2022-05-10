@@ -58,7 +58,7 @@ services:
     volumes:
       - ./oracle/config/ropsten-config3.js:/home/node/app/reporter/config.js
 
-  # BSC testnet
+  # BSC - telos testnet
   teleport-reporter1-bsc-testnet:
     command: "node reporter-eth.js"
     restart: always
@@ -86,6 +86,35 @@ services:
     container_name: teleport-reporter3-bsc-testnet
     volumes:
       - ./oracle/config/bsct-config3.js:/home/node/app/reporter/config.js
+
+    # BSC - wax testnet
+  teleport-reporter1-bsc-wax-testnet:
+    command: "node reporter-eth.js"
+    restart: always
+    build:
+      context: .
+    image: "teleport-reporter:v2"
+    container_name: teleport-reporter1-bsc-wax-testnet
+    volumes:
+      - ./oracle/config/bsct-wax-config1.js:/home/node/app/reporter/config.js
+  teleport-reporter2-bsc-wax-testnet:
+    command: "node reporter-eth.js"
+    restart: always
+    build:
+      context: .
+    image: "teleport-reporter:v2"
+    container_name: teleport-reporter2-bsc-wax-testnet
+    volumes:
+      - ./oracle/config/bsct-wax-config2.js:/home/node/app/reporter/config.js
+  teleport-reporter3-bsc-wax-testnet:
+    command: "node reporter-eth.js"
+    restart: always
+    build:
+      context: .
+    image: "teleport-reporter:v2"
+    container_name: teleport-reporter3-bsc-wax-testnet
+    volumes:
+      - ./oracle/config/bsct-wax-config3.js:/home/node/app/reporter/config.js
 
   # Telos evm testnet
   teleport-reporter1-tevm-testnet:
