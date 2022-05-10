@@ -29,6 +29,35 @@ services:
     volumes:
       - ./oracle/config/bsct-config3.js:/home/node/app/reporter/config.js
 
+  # wax (native) testnet
+  teleport-reporter1-wax-testnet:
+    command: "node reporter-eos.js"
+    restart: always
+    build:
+      context: .
+    image: "teleport-reporter:v2"
+    container_name: teleport-reporter1-wax-testnet
+    volumes:
+      - ./oracle/config/bsct-wax-config1.js:/home/node/app/reporter/config.js
+  teleport-reporter2-wax-testnet:
+    command: "node reporter-eos.js"
+    restart: always
+    build:
+      context: .
+    image: "teleport-reporter:v2"
+    container_name: teleport-reporter2-wax-testnet
+    volumes:
+      - ./oracle/config/bsct-wax-config2.js:/home/node/app/reporter/config.js
+  teleport-reporter3-wax-testnet:
+    command: "node reporter-eos.js"
+    restart: always
+    build:
+      context: .
+    image: "teleport-reporter:v2"
+    container_name: teleport-reporter3-wax-testnet
+    volumes:
+      - ./oracle/config/bsct-wax-config3.js:/home/node/app/reporter/config.js
+
   # Ropsten testnet
   teleport-reporter1-eth-testnet:
     command: "node reporter-eth.js"
