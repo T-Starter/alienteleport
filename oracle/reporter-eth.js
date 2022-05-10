@@ -145,7 +145,7 @@ const process_claimed = async (events) => {
             });
 
             let tokensList = tokensTable.rows.filter(token => token.enabled == 1);
-            let tokenAddrList = [...new Set(tokensList.map(r => r.remote_contracts).flat().filter(t => t.key == config.chainId).map(r => r.value.toLowerCase()))];
+            let tokenAddrList = [...new Set(tokensList.map(r => r.remote_contracts).flat().filter(t => t.key == config.eth.id).map(r => r.value.toLowerCase()))];
             // console.log(tokenAddrList);                
 
             if (events.length) {
@@ -241,7 +241,7 @@ const process_teleported = async (events) => {
             });
 
             let tokensList = tokensTable.rows.filter(token => token.enabled == 1);
-            let tokenAddrList = [...new Set(tokensList.map(r => r.remote_contracts).flat().filter(t => t.key == config.chainId).map(r => r.value.toLowerCase()))];
+            let tokenAddrList = [...new Set(tokensList.map(r => r.remote_contracts).flat().filter(t => t.key == config.eth.id).map(r => r.value.toLowerCase()))];
             // console.log(tokensList);
 
             if (events.length) {
@@ -277,13 +277,18 @@ const process_teleported = async (events) => {
                     let remoteContractPrecision = await erc20.decimals();
 
                     const to = data[0];
-                    const from_chain_id = config.chainId;
+                    const from_chain_id = config.eth.id;
                     const to_chain_id = data[2].toNumber();
                     const amount = parseFloat(
                         ethers.utils.formatUnits(amountBN, remoteContractPrecision)
                     ).toFixed(tokenNativePrecision);
                     const quantity = `${amount} ${tokenSymbol}`
                     const txid = events[r].transactionHash.replace(/^0x/, '');
+
+                    if (to_chain_id != config.eos.id) {
+                        // console.error('');
+                        continue;
+                    }
 
                     const actions = [];
                     actions.push({
