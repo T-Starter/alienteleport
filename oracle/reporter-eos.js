@@ -117,7 +117,13 @@ const run = async () => {
 
                     let tokensList = tokensTable.rows.filter(token => token.enabled == 1);
                     const token = tokensList.find(token => token.token.contract == teleport.token_contract);
-                    let remoteContractAddress = token.remote_contracts.find(t => t.key == teleport.chain_id).value.toLowerCase()
+                    let remoteContractAddress = "";
+                    try {
+                        remoteContractAddress = token.remote_contracts.find(t => t.key == teleport.chain_id).value.toLowerCase()
+                    } catch (error) {
+                        console.log(error)
+                        continue;
+                    }
                     let data_buf = "";
                     if (
                         v1TokenList.some(
