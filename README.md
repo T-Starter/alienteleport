@@ -98,3 +98,13 @@ Oracles can then call the received function on each contract when they see a tra
 ## Stats
 
 Tokenfactory gas cost: 0.025 ETH @ 10 Gwei
+
+## New relic monitoring
+Copy the .env.newrelic file to .env with
+`cp .env.newrelic .env`
+
+Place your new relic license key in the `NEW_RELIC_LICENSE_KEY` variable
+
+You will see the data coming through is there are errors in the APM.
+
+Currently logs are not being sent to New Relic. Might need to look at winston logging.
