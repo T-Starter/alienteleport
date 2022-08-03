@@ -1,5 +1,21 @@
 version: '3'
 services:
+  # New relic agent
+  agent:
+    container_name: newrelic-infra-teleport
+    image: newrelic/infrastructure:latest
+    cap_add:
+      - SYS_PTRACE
+    network_mode: host
+    pid: host
+    privileged: true
+    volumes:
+      - "/:/host:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    environment:
+      NRIA_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
+    restart: unless-stopped
+
   # Telos (native) mainnet
   teleport-reporter1-telos:
     command: "node reporter-eos.js"
@@ -10,6 +26,10 @@ services:
     container_name: teleport-reporter1-telos
     volumes:
       - ./oracle/config/tevm-config1.js:/home/node/app/reporter/config.js
+    environment:
+      - NEW_RELIC_APP_NAME=teleport-reporter1-telos
+    env_file:
+      - .env
   teleport-reporter2-telos:
     command: "node reporter-eos.js"
     restart: always
@@ -19,6 +39,10 @@ services:
     container_name: teleport-reporter2-telos
     volumes:
       - ./oracle/config/tevm-config2.js:/home/node/app/reporter/config.js
+    environment:
+      - NEW_RELIC_APP_NAME=teleport-reporter2-telos
+    env_file:
+      - .env
   teleport-reporter3-telos:
     command: "node reporter-eos.js"
     restart: always
@@ -28,6 +52,10 @@ services:
     container_name: teleport-reporter3-telos
     volumes:
       - ./oracle/config/tevm-config3.js:/home/node/app/reporter/config.js
+    environment:
+      - NEW_RELIC_APP_NAME=teleport-reporter3-telos
+    env_file:
+      - .env
 
   # Ethereum mainnet
   teleport-reporter1-eth:
@@ -39,6 +67,10 @@ services:
     container_name: teleport-reporter1-eth
     volumes:
       - ./oracle/config/eth-config1.js:/home/node/app/reporter/config.js
+    environment:
+      - NEW_RELIC_APP_NAME=teleport-reporter1-eth
+    env_file:
+      - .env
   teleport-reporter2-eth:
     command: "node reporter-eth.js"
     restart: always
@@ -48,6 +80,10 @@ services:
     container_name: teleport-reporter2-eth
     volumes:
       - ./oracle/config/eth-config2.js:/home/node/app/reporter/config.js
+    environment:
+      - NEW_RELIC_APP_NAME=teleport-reporter2-eth
+    env_file:
+      - .env
   teleport-reporter3-eth:
     command: "node reporter-eth.js"
     restart: always
@@ -57,6 +93,10 @@ services:
     container_name: teleport-reporter3-eth
     volumes:
       - ./oracle/config/eth-config3.js:/home/node/app/reporter/config.js
+    environment:
+      - NEW_RELIC_APP_NAME=teleport-reporter3-eth
+    env_file:
+      - .env
 
   # BSC mainnet
   teleport-reporter1-bsc:
@@ -68,6 +108,10 @@ services:
     container_name: teleport-reporter1-bsc
     volumes:
       - ./oracle/config/bsc-config1.js:/home/node/app/reporter/config.js
+    environment:
+      - NEW_RELIC_APP_NAME=teleport-reporter1-bsc
+    env_file:
+      - .env
   teleport-reporter2-bsc:
     command: "node reporter-eth.js"
     restart: always
@@ -77,6 +121,10 @@ services:
     container_name: teleport-reporter2-bsc
     volumes:
       - ./oracle/config/bsc-config2.js:/home/node/app/reporter/config.js
+    environment:
+      - NEW_RELIC_APP_NAME=teleport-reporter2-bsc
+    env_file:
+      - .env
   teleport-reporter3-bsc:
     command: "node reporter-eth.js"
     restart: always
@@ -86,6 +134,10 @@ services:
     container_name: teleport-reporter3-bsc
     volumes:
       - ./oracle/config/bsc-config3.js:/home/node/app/reporter/config.js
+    environment:
+      - NEW_RELIC_APP_NAME=teleport-reporter3-bsc
+    env_file:
+      - .env
 
   # Telos evm mainnet
   teleport-reporter1-tevm:
@@ -97,6 +149,10 @@ services:
     container_name: teleport-reporter1-tevm
     volumes:
       - ./oracle/config/tevm-config1.js:/home/node/app/reporter/config.js
+    environment:
+      - NEW_RELIC_APP_NAME=teleport-reporter1-tevm
+    env_file:
+      - .env
   teleport-reporter2-tevm:
     command: "node reporter-eth.js"
     restart: always
@@ -106,6 +162,10 @@ services:
     container_name: teleport-reporter2-tevm
     volumes:
       - ./oracle/config/tevm-config2.js:/home/node/app/reporter/config.js
+    environment:
+      - NEW_RELIC_APP_NAME=teleport-reporter2-tevm
+    env_file:
+      - .env
   teleport-reporter3-tevm:
     command: "node reporter-eth.js"
     restart: always
@@ -115,3 +175,7 @@ services:
     container_name: teleport-reporter3-tevm
     volumes:
       - ./oracle/config/tevm-config3.js:/home/node/app/reporter/config.js
+    environment:
+      - NEW_RELIC_APP_NAME=teleport-reporter3-tevm
+    env_file:
+      - .env

@@ -9,3 +9,4 @@ artifacts
 oracle/node_modules
 config.json
 build
+.env

@@ -1,5 +1,21 @@
 version: '3'
 services:
+  # New relic agent
+  agent:
+    container_name: newrelic-infra-teleport-testnet
+    image: newrelic/infrastructure:latest
+    cap_add:
+      - SYS_PTRACE
+    network_mode: host
+    pid: host
+    privileged: true
+    volumes:
+      - "/:/host:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    environment:
+      NRIA_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
+    restart: unless-stopped
+
   # Telos (native) testnet
   teleport-reporter1-telos-testnet:
     command: "node reporter-eos.js"
@@ -10,6 +26,10 @@ services:
     container_name: teleport-reporter1-telos-testnet
     volumes:
       - ./oracle/config/bsct-config1.js:/home/node/app/reporter/config.js
+    environment:
+      - NEW_RELIC_APP_NAME=teleport-reporter1-telos-testnet
+    env_file:
+      - .env
   teleport-reporter2-telos-testnet:
     command: "node reporter-eos.js"
     restart: always
@@ -19,6 +39,10 @@ services:
     container_name: teleport-reporter2-telos-testnet
     volumes:
       - ./oracle/config/bsct-config2.js:/home/node/app/reporter/config.js
+    environment:
+      - NEW_RELIC_APP_NAME=teleport-reporter2-telos-testnet
+    env_file:
+      - .env
   teleport-reporter3-telos-testnet:
     command: "node reporter-eos.js"
     restart: always
@@ -28,6 +52,10 @@ services:
     container_name: teleport-reporter3-telos-testnet
     volumes:
       - ./oracle/config/bsct-config3.js:/home/node/app/reporter/config.js
+    environment:
+      - NEW_RELIC_APP_NAME=teleport-reporter3-telos-testnet
+    env_file:
+      - .env
 
   # wax (native) testnet
   teleport-reporter1-wax-testnet:
@@ -39,6 +67,10 @@ services:
     container_name: teleport-reporter1-wax-testnet
     volumes:
       - ./oracle/config/bsct-wax-config1.js:/home/node/app/reporter/config.js
+    environment:
+      - NEW_RELIC_APP_NAME=teleport-reporter1-wax-testnet
+    env_file:
+      - .env
   teleport-reporter2-wax-testnet:
     command: "node reporter-eos.js"
     restart: always
@@ -48,6 +80,10 @@ services:
     container_name: teleport-reporter2-wax-testnet
     volumes:
       - ./oracle/config/bsct-wax-config2.js:/home/node/app/reporter/config.js
+    environment:
+      - NEW_RELIC_APP_NAME=teleport-reporter2-wax-testnet
+    env_file:
+      - .env
   teleport-reporter3-wax-testnet:
     command: "node reporter-eos.js"
     restart: always
@@ -57,6 +93,10 @@ services:
     container_name: teleport-reporter3-wax-testnet
     volumes:
       - ./oracle/config/bsct-wax-config3.js:/home/node/app/reporter/config.js
+    environment:
+      - NEW_RELIC_APP_NAME=teleport-reporter3-wax-testnet
+    env_file:
+      - .env
 
   # Ropsten testnet
   teleport-reporter1-eth-testnet:
@@ -68,6 +108,10 @@ services:
     container_name: teleport-reporter1-eth-testnet
     volumes:
       - ./oracle/config/ropsten-config1.js:/home/node/app/reporter/config.js
+    environment:
+      - NEW_RELIC_APP_NAME=teleport-reporter1-eth-testnet
+    env_file:
+      - .env
   teleport-reporter2-eth-testnet:
     command: "node reporter-eth.js"
     restart: always
@@ -77,6 +121,10 @@ services:
     container_name: teleport-reporter2-eth-testnet
     volumes:
       - ./oracle/config/ropsten-config2.js:/home/node/app/reporter/config.js
+    environment:
+      - NEW_RELIC_APP_NAME=teleport-reporter2-eth-testnet
+    env_file:
+      - .env
   teleport-reporter3-eth-testnet:
     command: "node reporter-eth.js"
     restart: always
@@ -86,6 +134,10 @@ services:
     container_name: teleport-reporter3-eth-testnet
     volumes:
       - ./oracle/config/ropsten-config3.js:/home/node/app/reporter/config.js
+    environment:
+      - NEW_RELIC_APP_NAME=teleport-reporter3-eth-testnet
+    env_file:
+      - .env
 
   # BSC - telos testnet
   teleport-reporter1-bsc-testnet:
@@ -97,6 +149,10 @@ services:
     container_name: teleport-reporter1-bsc-testnet
     volumes:
       - ./oracle/config/bsct-config1.js:/home/node/app/reporter/config.js
+    environment:
+      - NEW_RELIC_APP_NAME=teleport-reporter1-bsc-testnet
+    env_file:
+      - .env
   teleport-reporter2-bsc-testnet:
     command: "node reporter-eth.js"
     restart: always
@@ -106,6 +162,10 @@ services:
     container_name: teleport-reporter2-bsc-testnet
     volumes:
       - ./oracle/config/bsct-config2.js:/home/node/app/reporter/config.js
+    environment:
+      - NEW_RELIC_APP_NAME=teleport-reporter2-bsc-testnet
+    env_file:
+      - .env
   teleport-reporter3-bsc-testnet:
     command: "node reporter-eth.js"
     restart: always
@@ -115,6 +175,10 @@ services:
     container_name: teleport-reporter3-bsc-testnet
     volumes:
       - ./oracle/config/bsct-config3.js:/home/node/app/reporter/config.js
+    environment:
+      - NEW_RELIC_APP_NAME=teleport-reporter3-bsc-testnet
+    env_file:
+      - .env
 
     # BSC - wax testnet
   teleport-reporter1-bsc-wax-testnet:
@@ -126,6 +190,10 @@ services:
     container_name: teleport-reporter1-bsc-wax-testnet
     volumes:
       - ./oracle/config/bsct-wax-config1.js:/home/node/app/reporter/config.js
+    environment:
+      - NEW_RELIC_APP_NAME=teleport-reporter1-bsc-wax-testnet
+    env_file:
+      - .env
   teleport-reporter2-bsc-wax-testnet:
     command: "node reporter-eth.js"
     restart: always
@@ -135,6 +203,10 @@ services:
     container_name: teleport-reporter2-bsc-wax-testnet
     volumes:
       - ./oracle/config/bsct-wax-config2.js:/home/node/app/reporter/config.js
+    environment:
+      - NEW_RELIC_APP_NAME=teleport-reporter2-bsc-wax-testnet
+    env_file:
+      - .env
   teleport-reporter3-bsc-wax-testnet:
     command: "node reporter-eth.js"
     restart: always
@@ -144,6 +216,10 @@ services:
     container_name: teleport-reporter3-bsc-wax-testnet
     volumes:
       - ./oracle/config/bsct-wax-config3.js:/home/node/app/reporter/config.js
+    environment:
+      - NEW_RELIC_APP_NAME=teleport-reporter3-bsc-wax-testnet
+    env_file:
+      - .env
 
   # Telos evm testnet
   teleport-reporter1-tevm-testnet:
@@ -155,6 +231,10 @@ services:
     container_name: teleport-reporter1-tevm-testnet
     volumes:
       - ./oracle/config/tevmt-config1.js:/home/node/app/reporter/config.js
+    environment:
+      - NEW_RELIC_APP_NAME=teleport-reporter1-tevm-testnet
+    env_file:
+      - .env
   teleport-reporter2-tevm-testnet:
     command: "node reporter-eth.js"
     restart: always
@@ -164,6 +244,10 @@ services:
     container_name: teleport-reporter2-tevm-testnet
     volumes:
       - ./oracle/config/tevmt-config2.js:/home/node/app/reporter/config.js
+    environment:
+      - NEW_RELIC_APP_NAME=teleport-reporter2-tevm-testnet
+    env_file:
+      - .env
   teleport-reporter3-tevm-testnet:
     command: "node reporter-eth.js"
     restart: always
@@ -173,6 +257,10 @@ services:
     container_name: teleport-reporter3-tevm-testnet
     volumes:
       - ./oracle/config/tevmt-config3.js:/home/node/app/reporter/config.js
+    environment:
+      - NEW_RELIC_APP_NAME=teleport-reporter3-tevm-testnet
+    env_file:
+      - .env
 
 
 

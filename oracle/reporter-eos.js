@@ -3,6 +3,7 @@
 /*
 Lists all incomplete teleports from eos -> eth
  */
+require('newrelic');
 
 const config_file = process.env["CONFIG"] || "./config";
 process.title = `reporter-eos ${config_file}`;
@@ -121,7 +122,7 @@ const run = async () => {
                     try {
                         remoteContractAddress = token.remote_contracts.find(t => t.key == teleport.chain_id).value.toLowerCase()
                     } catch (error) {
-                        console.log(error)
+                        console.error(error)
                         continue;
                     }
                     let data_buf = "";
@@ -182,7 +183,7 @@ const run = async () => {
             }
             console.log("Done");
         } catch (error) {
-            console.log(error);
+            console.error(error);
         } finally {
             await sleep(10000);
         }
