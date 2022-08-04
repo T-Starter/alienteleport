@@ -21,6 +21,9 @@ const web3 = new Web3(new Web3.providers.HttpProvider(config.eth.endpoint));
 const ethUtil = require("ethereumjs-util");
 const ethers = require('ethers');
 
+const { logger } = require('./logger');
+logger.info(`is_production = ${process.env.NODE_ENV}`);
+
 const signatureProvider = new JsSignatureProvider([config.eos.privateKey]);
 const rpc = new JsonRpc(config.eos.endpoint, { fetch });
 const eos_api = new Api({
@@ -70,27 +73,17 @@ const run = async () => {
                 reverse: true,
             });
 
-            // console.log(res);
-
             res.rows.forEach((r) => {
                 if (r.signatures.length < 100) {
                     rows.push(r);
                 }
             });
 
-            // console.log("Teleports: ", rows);
-
-
             for (const teleport of rows) {
                 if (
                     !teleport.claimed &&
                     !teleport.oracles.includes(config.eos.oracleAccount)
                 ) {
-                    console.log(
-                        `Reporting ${teleport.account} - ${teleport.id
-                        }, oracles : ${JSON.stringify(teleport.oracles)}, amount : ${teleport.quantity
-                        }`
-                    );
 
                     // eth signing
                     // sign the transaction and send to the eos chain
@@ -122,7 +115,6 @@ const run = async () => {
                     try {
                         remoteContractAddress = token.remote_contracts.find(t => t.key == teleport.chain_id).value.toLowerCase()
                     } catch (error) {
-                        console.error(error)
                         continue;
                     }
                     let data_buf = "";
@@ -170,7 +162,6 @@ const run = async () => {
                         },
                     ];
 
-                    // console.log(actions);
                     const res = eos_api.transact(
                         { actions },
                         {
@@ -178,14 +169,16 @@ const run = async () => {
                             expireSeconds: 180,
                         }
                     );
-                    // console.log(res);
+                    logger.info(`Reporting ${teleport.account} - ${teleport.id
+                        }, oracles : ${JSON.stringify(teleport.oracles)}, amount : ${teleport.quantity
+                    }`);
                 }
             }
             console.log("Done");
         } catch (error) {
-            console.error(error);
+            logger.error(error);
         } finally {
-            await sleep(10000);
+            await sleep(config.pollingInterval);
         }
     }
 };

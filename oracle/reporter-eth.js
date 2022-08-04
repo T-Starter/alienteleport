@@ -16,6 +16,9 @@ const fetch = require('node-fetch');
 const fs = require('fs');
 const ethers = require('ethers');
 
+const { logger } = require('./logger');
+logger.info(`is_production = ${process.env.NODE_ENV}`);
+
 const config = require(process.env['CONFIG'] || './config');
 
 const provider = new ethers.providers.JsonRpcProvider(config.eth.endpoint);
@@ -146,8 +149,7 @@ const process_claimed = async (events) => {
             });
 
             let tokensList = tokensTable.rows.filter(token => token.enabled == 1);
-            let tokenAddrList = [...new Set(tokensList.map(r => r.remote_contracts).flat().filter(t => t.key == config.eth.id).map(r => r.value.toLowerCase()))];
-            // console.log(tokenAddrList);                
+            let tokenAddrList = [...new Set(tokensList.map(r => r.remote_contracts).flat().filter(t => t.key == config.eth.id).map(r => r.value.toLowerCase()))];             
 
             if (events.length) {
                 for (let r = 0; r < events.length; r++) {
@@ -167,8 +169,6 @@ const process_claimed = async (events) => {
                     } else {
                         continue;
                     }
-                    // console.log(data)
-                    // console.log(events[r], data, data[1].toString());
 
                     // get remote contract decimals
                     let remoteContractAddres = events[r].address.toLowerCase()
@@ -194,7 +194,6 @@ const process_claimed = async (events) => {
                             quantity
                         }
                     });
-                    // console.log(actions, events[r].transactionHash);
 
                     await_confirmation(events[r].transactionHash).then(async () => {
                         try {
@@ -202,27 +201,24 @@ const process_claimed = async (events) => {
                                 blocksBehind: 3,
                                 expireSeconds: 180,
                             });
-                            console.log(`Sent notification of claim with txid ${eos_res.transaction_id}, for ID ${id}, account 0x${to_eth.substr(0, 40)}, quantity ${quantity}`);
+                            logger.log(`Sent notification of claim with txid ${eos_res.transaction_id}, for ID ${id}, account 0x${to_eth.substr(0, 40)}, quantity ${quantity}`);
                             // resolve();
                         }
                         catch (e) {
                             if (e.message.indexOf('Already marked as claimed') > -1) {
-                                console.log(`ID ${id} is already claimed, account 0x${to_eth.substr(0, 40)}, quantity ${quantity}`);
+                                logger.log(`ID ${id} is already claimed, account 0x${to_eth.substr(0, 40)}, quantity ${quantity}`);
                             }
                             else {
-                                console.error(`Error sending confirm ${e.message}`);
+                                logger.error(`Error sending confirm ${e.message}`);
                                 // reject(e);
                             }
                         }
                     });
-
                     await sleep(500);
                 }
             }
-
             resolve();
         }
-
         catch (e) {
             reject(e);
         }
@@ -243,7 +239,6 @@ const process_teleported = async (events) => {
 
             let tokensList = tokensTable.rows.filter(token => token.enabled == 1);
             let tokenAddrList = [...new Set(tokensList.map(r => r.remote_contracts).flat().filter(t => t.key == config.eth.id).map(r => r.value.toLowerCase()))];
-            // console.log(tokensList);
 
             if (events.length) {
                 for (let r = 0; r < events.length; r++) {
@@ -264,11 +259,9 @@ const process_teleported = async (events) => {
                         continue;
                     }
 
-                    // console.log(events[r], data, data[1].toString())
                     const amountBN = data[1];
                     if (amountBN.lte(0)) {
-                        // console.error(data);
-                        console.error('Tokens are less than or equal to 0');
+                        logger.error('Tokens are less than or equal to 0');
                         continue;
                     }
 
@@ -287,7 +280,6 @@ const process_teleported = async (events) => {
                     const txid = events[r].transactionHash.replace(/^0x/, '');
 
                     if (to_chain_id != config.eos.id) {
-                        // console.error('');
                         continue;
                     }
 
@@ -309,7 +301,6 @@ const process_teleported = async (events) => {
                             confirmed: true
                         }
                     });
-                    // console.log(actions);
 
                     await_confirmation(events[r].transactionHash).then(async () => {
                         try {
@@ -317,24 +308,22 @@ const process_teleported = async (events) => {
                                 blocksBehind: 3,
                                 expireSeconds: 180,
                             });
-                            console.log(`Sent notification of teleport with txid ${eos_res.transaction_id}`);
+                            logger.log(`Sent notification of teleport with txid ${eos_res.transaction_id}`);
                             // resolve();
                         }
                         catch (e) {
                             if (e.message.indexOf('Oracle has already approved') > -1) {
-                                console.log('Oracle has already approved');
+                                logger.log('Oracle has already approved');
                             }
                             else {
-                                console.error(`Error sending teleport ${e.message}`);
+                                logger.error(`Error sending teleport ${e.message}`);
                                 // reject(e);
                             }
                         }
                     });
-
                     await sleep(500);
                 }
             }
-
             resolve();
         }
         catch (e) {
@@ -359,7 +348,6 @@ const run = async (from_block = 'latest') => {
             if (from_block === 'latest') {
                 // could not get block from file and it wasn't specified (go back 100 blocks)
                 from_block = latest_block - 100;
-                // console.log(block, from_block)
             }
             let to_block = from_block + 100;
             if (to_block > latest_block) {
@@ -388,7 +376,7 @@ const run = async (from_block = 'latest') => {
             }
         }
         catch (e) {
-            console.error(e.message);
+            logger.error(e.message);
         }
     }
 }
