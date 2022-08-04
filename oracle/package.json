@@ -17,6 +17,7 @@
     "newrelic": "^8.17.0",
     "node-fetch": "^2.6.0",
     "text-encoding": "^0.7.0",
-    "web3": "^1.2.11"
+    "web3": "^1.2.11",
+    "winston": "^3.8.1"
   }
 }
