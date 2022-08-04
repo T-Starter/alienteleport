@@ -201,12 +201,12 @@ const process_claimed = async (events) => {
                                 blocksBehind: 3,
                                 expireSeconds: 180,
                             });
-                            logger.log(`Sent notification of claim with txid ${eos_res.transaction_id}, for ID ${id}, account 0x${to_eth.substr(0, 40)}, quantity ${quantity}`);
+                            logger.info(`Sent notification of claim with txid ${eos_res.transaction_id}, for ID ${id}, account 0x${to_eth.substr(0, 40)}, quantity ${quantity}`);
                             // resolve();
                         }
                         catch (e) {
                             if (e.message.indexOf('Already marked as claimed') > -1) {
-                                logger.log(`ID ${id} is already claimed, account 0x${to_eth.substr(0, 40)}, quantity ${quantity}`);
+                                logger.error(`ID ${id} is already claimed, account 0x${to_eth.substr(0, 40)}, quantity ${quantity}`);
                             }
                             else {
                                 logger.error(`Error sending confirm ${e.message}`);
@@ -308,12 +308,12 @@ const process_teleported = async (events) => {
                                 blocksBehind: 3,
                                 expireSeconds: 180,
                             });
-                            logger.log(`Sent notification of teleport with txid ${eos_res.transaction_id}`);
+                            logger.info(`Sent notification of teleport with txid ${eos_res.transaction_id}`);
                             // resolve();
                         }
                         catch (e) {
                             if (e.message.indexOf('Oracle has already approved') > -1) {
-                                logger.log('Oracle has already approved');
+                                logger.error('Oracle has already approved');
                             }
                             else {
                                 logger.error(`Error sending teleport ${e.message}`);
