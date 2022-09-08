@@ -44,6 +44,16 @@ module.exports = {
             provider: _ => getProvider(),
             confirmations: CONFIRMATIONS,
         },
+        goerli: {
+            network_id: 5,
+            gas: GAS_LIMIT,
+            websockets: true,
+            gasPrice: GAS_PRICE,
+            timeoutBlocks: 30000,
+            networkCheckTimeout: 5000000,
+            provider: _ => getProvider(),
+            confirmations: CONFIRMATIONS,
+        },
         bscMainnet: {
             network_id: 56,
             gas: GAS_LIMIT,

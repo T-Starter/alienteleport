@@ -13,8 +13,8 @@ BSC:
 Telos EVM: 0x7a82dE1B2159C33C8d93cd9Dbb06350820458E4f
 
 **Testnet Factory**
-Ethereum: 0x011fDBfd56f0cd3a0a85885FBdE64cc90BB26D0C (outdated)
-BSC: 0x1252d7fFCD2F3FA75045c9220606D2791b026351 (outdated)
+Goerli: 0xB4067e220966a41dd1694abAC422d6ca9cd2EC7D
+BSC: 0xb945Dc9F48895F296eE30447A4dD603eaa2f3E72
 Telos EVM: 0x6F174B0a2c6B6807CcCc18b6643dbf755E31400c
 
 ### Deployment guide
@@ -88,7 +88,7 @@ Oracles can then call the received function on each contract when they see a tra
 
 ## Adding a token
 
-1. Go to the teleport contract on the chain you want to add a token to. e.g. https://testnet.bscscan.com/address/0x578e49D8e33168c74a150B8D12d8C2E8B78cE9a4#writeContract
+1. Go to the teleport contract on the chain you want to add a token to. e.g. <https://testnet.bscscan.com/address/0x578e49D8e33168c74a150B8D12d8C2E8B78cE9a4#writeContract>
 2. Call the create action with the desired token information.
 3. Go to the created token contract and call the `acceptOwnership` action.
 4. Go to the tport.start contract on Telos and call the `addtoken` action with the required info.
@@ -100,6 +100,7 @@ Oracles can then call the received function on each contract when they see a tra
 Tokenfactory gas cost: 0.025 ETH @ 10 Gwei
 
 ## New relic monitoring
+
 Copy the .env.newrelic file to .env with
 `cp .env.newrelic .env`
 
