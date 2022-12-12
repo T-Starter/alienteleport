@@ -9,7 +9,7 @@ on their respective chains.
 
 **Mainnet**
 Ethereum:
-BSC:
+BSC: 0x20c5bdabf14499234a4ec62b81145164f867da98
 Telos EVM: 0x7a82dE1B2159C33C8d93cd9Dbb06350820458E4f
 
 **Testnet Factory**

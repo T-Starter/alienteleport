@@ -32,6 +32,7 @@ const blocks_file = `.oracle_${config.network}_block-${config.eth.oracleAccount}
 const POLL_INTERVAL = config.pollingInterval || 30000;
 const DEFAULT_BLOCKS_TO_WAIT = 5;
 const claimed_topic = '0x94af4c5d270a63723e4dd7b1ae4a8de3734098f6677d9f170af24fec77603b37';
+const claimed_topic_v1 = '0xf20fc6923b8057dd0c3b606483fcaa038229bb36ebc35a0040e3eaa39cf97b17';
 const teleport_topic = '0x622824274e0937ee319b036740cd0887131781bc2032b47eac3e88a1be17f5d5';
 
 const tokenABI = [
@@ -113,17 +114,16 @@ const process_logs = async (from_block, to_block) => {
             const query = {
                 fromBlock: from_block,
                 toBlock: to_block,
-                topics: [[claimed_topic, teleport_topic]],
+                topics: [[claimed_topic, teleport_topic, claimed_topic_v1]],
             };
             // console.log(query);
             const res = await provider.getLogs(query);
-            // console.log(res);
             if (res.length) {
                 let teleport_events = res.filter((log) => {
                     return log.topics[0] === teleport_topic;
                 });
                 let claimed_events = res.filter((log) => {
-                    return log.topics[0] === claimed_topic;
+                    return log.topics[0] === claimed_topic || log.topics[0] === claimed_topic_v1;
                 });
                 await process_teleported(teleport_events);
                 await process_claimed(claimed_events);
@@ -149,7 +149,7 @@ const process_claimed = async (events) => {
             });
 
             let tokensList = tokensTable.rows.filter(token => token.enabled == 1);
-            let tokenAddrList = [...new Set(tokensList.map(r => r.remote_contracts).flat().filter(t => t.key == config.eth.id).map(r => r.value.toLowerCase()))];             
+            let tokenAddrList = [...new Set(tokensList.map(r => r.remote_contracts).flat().filter(t => t.key == config.eth.id).map(r => r.value.toLowerCase()))];
 
             if (events.length) {
                 for (let r = 0; r < events.length; r++) {
@@ -166,7 +166,10 @@ const process_claimed = async (events) => {
                     let data;
                     if (events[r].topics[0] == claimed_topic) {
                         data = await ethers.utils.defaultAbiCoder.decode(['uint64', 'address', 'address', 'uint'], events[r].data);
-                    } else {
+                    } else if (events[r].topics[0] == claimed_topic_v1) {
+                        data = await ethers.utils.defaultAbiCoder.decode(['uint64', 'address', 'uint'], events[r].data);
+                    }
+                    else {
                         continue;
                     }
 
@@ -177,7 +180,12 @@ const process_claimed = async (events) => {
 
                     const id = data[0].toNumber();
                     const to_eth = data[1].replace('0x', '') + '000000000000000000000000';
-                    const ethAmount = parseFloat(ethers.utils.formatUnits(data[3].toString(), remoteContractPrecision)).toFixed(tokenNativePrecision);
+                    let ethAmount;// backwards compatible with v1
+                    if (events[r].topics[0] == claimed_topic) {
+                        ethAmount = parseFloat(ethers.utils.formatUnits(data[3].toString(), remoteContractPrecision)).toFixed(tokenNativePrecision);
+                    } else if (events[r].topics[0] == claimed_topic_v1) {
+                        ethAmount = parseFloat(ethers.utils.formatUnits(data[2].toString(), remoteContractPrecision)).toFixed(tokenNativePrecision);
+                    }
                     const quantity = `${ethAmount} ${tokenSymbol}`;
                     const actions = [];
                     actions.push({
