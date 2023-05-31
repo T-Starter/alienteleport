@@ -97,7 +97,7 @@ Oracles can then call the received function on each contract when they see a tra
 
 ## Stats
 
-Tokenfactory gas cost: 0.025 ETH @ 10 Gwei
+Tokenfactory gas (deployment): 2,508,423
 
 ## New relic monitoring
 
