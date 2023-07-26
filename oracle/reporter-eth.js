@@ -357,7 +357,7 @@ const run = async (from_block = 'latest') => {
                 // could not get block from file and it wasn't specified (go back 100 blocks)
                 from_block = latest_block - 100;
             }
-            let to_block = from_block + 100;
+            let to_block = from_block + 1000;
             if (to_block > latest_block) {
                 to_block = latest_block;
             }
