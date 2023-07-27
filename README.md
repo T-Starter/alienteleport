@@ -57,7 +57,11 @@ Finally, to verify the deployed contract run:
 ❍ npx truffle run verify TeleportTokenFactory --network <network>
 ```
 
-To verify the teleport token repeat the above process also editing the 2_deploy_contracts script to deploy and verify the contract
+To verify the teleport token use <https://abi.hashex.org/> to encode the constructor arguments and then run the following command:
+
+```
+npx truffle run verify TeleportToken@0xaddress --forceConstructorArgs string:<endoced abi> --network goerli
+```
 
 ## Tests
 
