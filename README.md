@@ -113,3 +113,9 @@ Place your new relic license key in the `NEW_RELIC_LICENSE_KEY` variable
 You will see the data coming through is there are errors in the APM.
 
 Currently logs are not being sent to New Relic. Might need to look at winston logging.
+
+## DevOps with Ansible
+
+<https://github.com/Yknot-BCS/ansible>
+
+That is where we control the teleport oracles.

@@ -28,7 +28,7 @@ const rpc = new JsonRpc(config.eos.endpoint, { fetch });
 const eos_api = new Api({ rpc, signatureProvider, textDecoder: new TextDecoder(), textEncoder: new TextEncoder() });
 
 const network = config.network || 'ETH'
-const blocks_file = `.oracle_${config.network}_block-${config.eth.oracleAccount}`;
+const blocks_file = `blocksave/.oracle_${config.network}_block-${config.eth.oracleAccount}`;
 const POLL_INTERVAL = config.pollingInterval || 30000;
 const DEFAULT_BLOCKS_TO_WAIT = 5;
 const claimed_topic = '0x94af4c5d270a63723e4dd7b1ae4a8de3734098f6677d9f170af24fec77603b37';
@@ -84,6 +84,8 @@ const load_block = async () => {
                 block_number -= 50;
             }
         }
+    } else {
+        console.log(`File ${blocks_file} not found`);
     }
 
     return block_number;
@@ -355,7 +357,7 @@ const run = async (from_block = 'latest') => {
             }
             if (from_block === 'latest') {
                 // could not get block from file and it wasn't specified (go back 100 blocks)
-                from_block = latest_block - 100;
+                from_block = latest_block - 1000;
             }
             let to_block = from_block + 1000;
             if (to_block > latest_block) {
