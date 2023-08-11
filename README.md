@@ -8,7 +8,7 @@ There are contracts available for both EOSIO chains and Ethereum, both should be
 on their respective chains.
 
 **Mainnet**
-Ethereum:
+Ethereum: 0xb379Bc1330Bb8c5ACB3E3bf06F775B5eb83760b3
 BSC: 0x20c5bdabf14499234a4ec62b81145164f867da98
 Telos EVM: 0x7a82dE1B2159C33C8d93cd9Dbb06350820458E4f
 
@@ -101,7 +101,7 @@ Oracles can then call the received function on each contract when they see a tra
 
 ## Stats
 
-Tokenfactory gas (deployment): 2,508,423
+Tokenfactory gas (deployment): 2 508 423
 
 ## New relic monitoring
 
